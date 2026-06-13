@@ -1,0 +1,778 @@
+<!DOCTYPE html><html class="light" lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>LittleSteps - 疫苗接种助手</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&family=Be+Vietnam+Pro:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+<script src="api.js"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-secondary-fixed": "#0c1e26",
+                    "on-primary-fixed-variant": "#4a4739",
+                    "on-tertiary": "#ffffff",
+                    "background": "#f8f9ff",
+                    "surface": "#f8f9ff",
+                    "on-error-container": "#93000a",
+                    "surface-bright": "#f8f9ff",
+                    "surface-tint": "#625f4f",
+                    "on-error": "#ffffff",
+                    "surface-container-lowest": "#ffffff",
+                    "secondary-container": "#d3e5f1",
+                    "surface-variant": "#d9e3f4",
+                    "on-primary": "#ffffff",
+                    "surface-container-high": "#dfe9fa",
+                    "on-primary-container": "#767262",
+                    "error": "#ba1a1a",
+                    "primary-fixed": "#e8e2cf",
+                    "tertiary": "#695a64",
+                    "on-surface-variant": "#49473f",
+                    "error-container": "#ffdad6",
+                    "on-surface": "#121c28",
+                    "secondary": "#50616b",
+                    "on-secondary-fixed-variant": "#384953",
+                    "on-tertiary-fixed": "#231820",
+                    "surface-dim": "#d1dbec",
+                    "inverse-surface": "#27313e",
+                    "on-secondary": "#ffffff",
+                    "secondary-fixed": "#d3e5f1",
+                    "tertiary-fixed": "#f1dde9",
+                    "on-secondary-container": "#566771",
+                    "primary-container": "#fff9e5",
+                    "primary": "#625f4f",
+                    "outline-variant": "#cbc6bb",
+                    "surface-container": "#e5eeff",
+                    "surface-container-highest": "#d9e3f4",
+                    "surface-container-low": "#eef4ff",
+                    "on-background": "#121c28",
+                    "inverse-on-surface": "#eaf1ff",
+                    "on-primary-fixed": "#1e1c10",
+                    "outline": "#7a776e",
+                    "primary-fixed-dim": "#ccc6b4",
+                    "inverse-primary": "#ccc6b4",
+                    "tertiary-container": "#fff7f9",
+                    "tertiary-fixed-dim": "#d5c1cd",
+                    "on-tertiary-fixed-variant": "#51434c",
+                    "on-tertiary-container": "#7e6e78",
+                    "secondary-fixed-dim": "#b7c9d5"
+            },
+            "borderRadius": {
+                    "DEFAULT": "1rem",
+                    "lg": "2rem",
+                    "xl": "3rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "gutter": "24px",
+                    "base": "8px",
+                    "section-gap": "64px",
+                    "container-padding-desktop": "40px",
+                    "container-padding-mobile": "20px"
+            },
+            "fontFamily": {
+                    "display-lg": ["Quicksand"],
+                    "headline-md": ["Quicksand"],
+                    "body-md": ["Be Vietnam Pro"],
+                    "display-lg-mobile": ["Quicksand"],
+                    "label-md": ["Quicksand"],
+                    "body-lg": ["Be Vietnam Pro"]
+            },
+            "fontSize": {
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "display-lg-mobile": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
+                    "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .squishy-btn {
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .squishy-btn:active {
+            transform: scale(0.92);
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(16px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeOutDown {
+            from { opacity: 1; transform: translateY(0); }
+            to { opacity: 0; transform: translateY(16px); }
+        }
+        @keyframes toastIn {
+            from { opacity: 0; transform: translateX(100%); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes toastOut {
+            from { opacity: 1; transform: translateX(0); }
+            to { opacity: 0; transform: translateX(100%); }
+        }
+        @keyframes modalOverlayIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes modalContentIn {
+            from { opacity: 0; transform: scale(0.9) translateY(20px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        @keyframes pulse-ring {
+            0% { box-shadow: 0 0 0 0 rgba(105, 90, 100, 0.4); }
+            70% { box-shadow: 0 0 0 12px rgba(105, 90, 100, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(105, 90, 100, 0); }
+        }
+        .vaccine-card {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .vaccine-card.hiding {
+            animation: fadeOutDown 0.35s ease forwards;
+        }
+        .vaccine-card.showing {
+            animation: fadeInUp 0.4s ease forwards;
+        }
+        .toast {
+            animation: toastIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+        .toast.hiding {
+            animation: toastOut 0.3s ease forwards;
+        }
+        .modal-overlay {
+            animation: modalOverlayIn 0.25s ease forwards;
+        }
+        .modal-content {
+            animation: modalContentIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+        .fab-pulse {
+            animation: pulse-ring 2s infinite;
+        }
+    </style>
+</head>
+<body class="bg-surface font-body-md text-on-surface selection:bg-tertiary-fixed">
+<!-- Toast Container -->
+<div id="toast-container" class="fixed top-6 right-6 z-[100] flex flex-col gap-3 pointer-events-none"></div>
+
+<!-- Reminder Modal -->
+<div id="reminder-modal" class="fixed inset-0 z-[90] hidden items-center justify-center" style="display:none;">
+    <div class="modal-overlay absolute inset-0 bg-black/40" onclick="closeReminderModal()"></div>
+    <div class="modal-content relative bg-white rounded-xl p-8 max-w-md w-full mx-4 shadow-2xl border-2 border-primary-container z-10">
+        <div class="flex items-center gap-3 mb-4">
+            <div class="w-12 h-12 rounded-full bg-tertiary-container flex items-center justify-center text-tertiary">
+                <span class="material-symbols-outlined" style="font-variation-settings:'FILL'1;">notifications_active</span>
+            </div>
+            <h3 class="font-headline-md text-headline-md text-primary">设置接种提醒</h3>
+        </div>
+        <p id="reminder-vaccine-name" class="text-secondary mb-6"></p>
+        <div class="space-y-4 mb-6">
+            <div>
+                <label class="block font-label-md text-on-surface-variant mb-2">提醒日期</label>
+                <input id="reminder-date" type="date" class="w-full bg-surface-container-low border-none rounded-lg p-3 font-body-md focus:ring-4 focus:ring-tertiary-fixed ring-opacity-50 transition-all">
+            </div>
+            <div>
+                <label class="block font-label-md text-on-surface-variant mb-2">提醒时间</label>
+                <input id="reminder-time" type="time" value="09:00" class="w-full bg-surface-container-low border-none rounded-lg p-3 font-body-md focus:ring-4 focus:ring-tertiary-fixed ring-opacity-50 transition-all">
+            </div>
+        </div>
+        <div class="flex gap-3">
+            <button onclick="closeReminderModal()" class="flex-1 px-6 py-3 rounded-lg bg-surface-container-high text-secondary font-label-md hover:bg-surface-container transition-all">取消</button>
+            <button onclick="confirmReminder()" class="flex-1 px-6 py-3 rounded-lg bg-tertiary text-white font-label-md squishy-btn shadow-md flex items-center justify-center gap-2">
+                <span class="material-symbols-outlined text-sm">check</span> 确认设置
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Add Record Modal -->
+<div id="add-record-modal" class="fixed inset-0 z-[90] hidden items-center justify-center" style="display:none;">
+    <div class="modal-overlay absolute inset-0 bg-black/40" onclick="closeAddRecordModal()"></div>
+    <div class="modal-content relative bg-white rounded-xl p-8 max-w-lg w-full mx-4 shadow-2xl border-2 border-primary-container z-10 max-h-[90vh] overflow-y-auto">
+        <div class="flex items-center gap-3 mb-6">
+            <div class="w-12 h-12 rounded-full bg-primary-container flex items-center justify-center text-primary">
+                <span class="material-symbols-outlined" style="font-variation-settings:'FILL'1;">add_circle</span>
+            </div>
+            <h3 class="font-headline-md text-headline-md text-primary">添加疫苗记录</h3>
+        </div>
+        <div class="space-y-4 mb-6">
+            <div>
+                <label class="block font-label-md text-on-surface-variant mb-2">疫苗名称</label>
+                <input id="add-vaccine-name" type="text" placeholder="例如: 乙肝疫苗 (HepB)" class="w-full bg-surface-container-low border-none rounded-lg p-3 font-body-md focus:ring-4 focus:ring-primary-fixed ring-opacity-50 transition-all">
+            </div>
+            <div>
+                <label class="block font-label-md text-on-surface-variant mb-2">剂次</label>
+                <input id="add-vaccine-dose" type="text" placeholder="例如: 第1剂" class="w-full bg-surface-container-low border-none rounded-lg p-3 font-body-md focus:ring-4 focus:ring-primary-fixed ring-opacity-50 transition-all">
+            </div>
+            <div>
+                <label class="block font-label-md text-on-surface-variant mb-2">接种日期</label>
+                <input id="add-vaccine-date" type="date" class="w-full bg-surface-container-low border-none rounded-lg p-3 font-body-md focus:ring-4 focus:ring-primary-fixed ring-opacity-50 transition-all">
+            </div>
+            <div>
+                <label class="block font-label-md text-on-surface-variant mb-2">状态</label>
+                <select id="add-vaccine-status" class="w-full bg-surface-container-low border-none rounded-lg p-3 font-body-md focus:ring-4 focus:ring-primary-fixed ring-opacity-50 transition-all">
+                    <option value="Completed">已完成</option>
+                    <option value="Pending">待接种</option>
+                    <option value="Overdue">已逾期</option>
+                </select>
+            </div>
+            <div>
+                <label class="block font-label-md text-on-surface-variant mb-2">备注描述</label>
+                <textarea id="add-vaccine-desc" rows="2" placeholder="描述疫苗的作用..." class="w-full bg-surface-container-low border-none rounded-lg p-3 font-body-md focus:ring-4 focus:ring-primary-fixed ring-opacity-50 transition-all"></textarea>
+            </div>
+        </div>
+        <div class="flex gap-3">
+            <button onclick="closeAddRecordModal()" class="flex-1 px-6 py-3 rounded-lg bg-surface-container-high text-secondary font-label-md hover:bg-surface-container transition-all">取消</button>
+            <button onclick="confirmAddRecord()" class="flex-1 px-6 py-3 rounded-lg bg-primary text-white font-label-md squishy-btn shadow-md flex items-center justify-center gap-2">
+                <span class="material-symbols-outlined text-sm">save</span> 保存记录
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Certificate Modal -->
+<div id="cert-modal" class="fixed inset-0 z-[90] hidden items-center justify-center" style="display:none;">
+    <div class="modal-overlay absolute inset-0 bg-black/40" onclick="closeCertModal()"></div>
+    <div class="modal-content relative bg-white rounded-xl p-8 max-w-md w-full mx-4 shadow-2xl border-2 border-secondary-container z-10 text-center">
+        <div class="w-20 h-20 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
+            <span class="material-symbols-outlined text-green-600 text-5xl" style="font-variation-settings:'FILL'1;">verified</span>
+        </div>
+        <h3 id="cert-vaccine-title" class="font-headline-md text-headline-md text-primary mb-2"></h3>
+        <p class="text-secondary mb-2">接种证书</p>
+        <p id="cert-vaccine-date" class="text-sm text-secondary/60 mb-6"></p>
+        <div class="bg-surface-container-low rounded-lg p-4 mb-6 border-2 border-dashed border-secondary-container">
+            <span class="material-symbols-outlined text-5xl text-secondary/40">description</span>
+            <p class="text-secondary/60 text-sm mt-2">电子证书已存档，可随时下载</p>
+        </div>
+        <div class="flex gap-3">
+            <button onclick="closeCertModal()" class="flex-1 px-6 py-3 rounded-lg bg-surface-container-high text-secondary font-label-md">关闭</button>
+            <button onclick="showToast('证书下载中… 📄'); closeCertModal();" class="flex-1 px-6 py-3 rounded-lg bg-primary text-white font-label-md squishy-btn shadow-md flex items-center justify-center gap-2">
+                <span class="material-symbols-outlined text-sm">download</span> 下载证书
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Top Navigation Bar -->
+<header class="bg-surface-container-low shadow-[0_10px_25px_-5px_rgba(200,180,150,0.2)] docked full-width top-0 sticky z-50">
+<div class="flex justify-between items-center px-container-padding-desktop py-4 w-full max-w-[1200px] mx-auto">
+<h1 class="font-display-lg text-display-lg text-primary tracking-tight">LittleSteps</h1>
+<nav class="hidden md:flex gap-8 items-center">
+<a class="text-secondary hover:text-primary transition-colors duration-200 font-label-md text-label-md" href="dashboard.html">控制面板</a>
+<a class="text-secondary hover:text-primary transition-colors duration-200 font-label-md text-label-md" href="journal.html">每日日志</a>
+<a class="text-secondary hover:text-primary transition-colors duration-200 font-label-md text-label-md" href="growth.html">成长轨迹</a>
+<a class="text-primary font-bold border-b-4 border-tertiary rounded-t-lg pb-1 font-label-md text-label-md" href="#">疫苗计划</a>
+<a class="text-secondary hover:text-primary transition-colors duration-200 font-label-md text-label-md" href="gallery.html">精彩瞬间</a>
+</nav>
+<div class="flex items-center gap-4">
+<button class="p-2 hover:bg-primary-container/50 rounded-xl transition-all active:scale-95 duration-150" onclick="showToast('暂无新通知 🔔')">
+<span class="material-symbols-outlined text-primary">notifications</span>
+</button>
+<button class="p-2 hover:bg-error-container/50 rounded-xl transition-all active:scale-95 duration-150" onclick="handleLogout()" title="退出登录">
+<span class="material-symbols-outlined text-error">logout</span>
+</button>
+<div class="w-10 h-10 rounded-full bg-primary-fixed overflow-hidden border-2 border-white shadow-sm">
+<img alt="Parent profile avatar" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDvqHTQ0_J0k320hWqnpswhVTG2Qz5id6Q0nupAo66pWs04rLZXPyGyFTErBD8Ofg7FDLJi3M_1Pt2hyq3pFikYg-jaI2fzl1pvrSAeTABqV9-U7UjD8v9UFvUcEXIX42JA7c-o1Yqr7TO0-LbrjoN-wIFChS7k1mXhpFh7e0l2HEdbjkUViw4Sxywi5p5DOk-x8Zj-im5K73bHXBCC5ETj2S3pKEuer4cxTs4VcIvYXX_OSBDwm9sBtD3mLDJaY9kblZUh7TTwFEg">
+</div>
+</div>
+</div>
+</header>
+<main class="max-w-[1200px] mx-auto px-container-padding-desktop py-12">
+<!-- Hero & Controls -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-12">
+<div>
+<span class="inline-block px-4 py-1 rounded-full bg-secondary-container text-on-secondary-container font-label-md text-label-md mb-4">健康助手</span>
+<h2 class="font-display-lg text-display-lg text-on-surface mb-2">疫苗接种计划</h2>
+<p class="font-body-lg text-body-lg text-secondary max-w-xl">追踪小宜蓁的免疫旅程。温馨提醒，守护健康起点。</p>
+</div>
+<div class="flex flex-wrap gap-3">
+<button class="squishy-btn px-6 py-3 rounded-full bg-primary text-on-primary font-label-md text-label-md shadow-lg" id="btn-all" onclick="filterVaccines('all')">全部</button>
+<button class="squishy-btn px-6 py-3 rounded-full bg-white border-2 border-primary-container text-primary font-label-md text-label-md shadow-sm" id="btn-todo" onclick="filterVaccines('Pending')">待办</button>
+<button class="squishy-btn px-6 py-3 rounded-full bg-white border-2 border-primary-container text-primary font-label-md text-label-md shadow-sm" id="btn-completed" onclick="filterVaccines('Completed')">已完成</button>
+</div>
+</div>
+<!-- Dashboard Stat Cards -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+<div class="bg-tertiary-container p-8 rounded-lg shadow-[0_10px_25px_-5px_rgba(200,180,150,0.2)] border-2 border-tertiary/10 cursor-pointer hover:scale-[1.02] transition-transform" onclick="filterVaccines('Completed')">
+<div class="flex items-center gap-4 mb-4">
+<div class="w-12 h-12 rounded-xl bg-white flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+<span class="font-headline-md text-headline-md text-on-tertiary-container"><span id="stat-completed">2</span> / <span id="stat-total">4</span></span>
+</div>
+<p class="text-on-tertiary-container/80 font-label-md">已完成接种</p>
+<div class="mt-4 h-3 w-full bg-white/50 rounded-full overflow-hidden">
+<div class="h-full bg-tertiary rounded-full transition-all duration-700 ease-out" id="stat-progress-bar" style="width: 50%;"></div>
+</div>
+</div>
+<div class="bg-primary-container p-8 rounded-lg shadow-[0_10px_25px_-5px_rgba(200,180,150,0.2)] border-2 border-primary/10 cursor-pointer hover:scale-[1.02] transition-transform" onclick="filterVaccines('Pending')">
+<div class="flex items-center gap-4 mb-4">
+<div class="w-12 h-12 rounded-xl bg-white flex items-center justify-center text-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">event</span>
+</div>
+<span class="font-headline-md text-headline-md text-on-primary-container" id="stat-next">6-12个月</span>
+</div>
+<p class="text-on-primary-container/80 font-label-md" id="stat-next-desc">流感疫苗待接种</p>
+<div class="mt-4 flex items-center gap-2 text-primary">
+<span class="material-symbols-outlined text-sm">info</span>
+<span class="text-xs">请尽快预约接种</span>
+</div>
+</div>
+<div class="bg-surface-container-high p-8 rounded-lg shadow-[0_10px_25px_-5px_rgba(200,180,150,0.1)] border-2 border-secondary/10 cursor-pointer hover:scale-[1.02] transition-transform" onclick="showToast('儿科医生：张医生 - 社区卫生中心 📞')">
+<div class="flex items-center gap-4 mb-4">
+<div class="w-12 h-12 rounded-xl bg-white flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">medical_services</span>
+</div>
+<span class="font-headline-md text-headline-md text-on-surface">儿科医生</span>
+</div>
+<p class="text-secondary font-label-md">Doctor Zhu</p>
+<p class="text-secondary/60 text-xs mt-1">家庭医生 · 全年坐诊</p>
+</div>
+</div>
+<!-- Vaccine Sections -->
+<div class="space-y-16">
+<!-- 0-6 Months -->
+<section id="section-0-6">
+<div class="flex items-center gap-4 mb-8">
+<div class="h-10 w-2 bg-tertiary rounded-full"></div>
+<h3 class="font-headline-md text-headline-md text-primary">0 - 6 个月</h3>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8" id="list-0-6">
+<!-- Vaccine Card 1: HepB -->
+<div class="vaccine-card group bg-white p-8 rounded-lg shadow-[0_10px_25px_-5px_rgba(200,180,150,0.15)] border-2 border-surface-variant transition-all hover:translate-y-[-4px]" data-status="Completed" data-name="乙肝疫苗 (HepB)" data-date="2024年5月12日" data-section="0-6">
+<div class="flex justify-between items-start mb-6">
+<div class="flex items-center gap-3">
+<div class="w-12 h-12 rounded-full bg-secondary-container/30 flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined">vaccines</span>
+</div>
+<div>
+<h4 class="font-headline-md text-[20px] leading-tight">乙肝疫苗 (HepB)</h4>
+<p class="text-xs text-secondary font-medium">出生首剂</p>
+</div>
+</div>
+<span class="px-3 py-1 rounded-full bg-green-100 text-green-700 font-label-md text-[12px] flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                            已完成
+                        </span>
+</div>
+<p class="text-secondary font-body-md mb-6 leading-relaxed">预防由乙型肝炎病毒引起的严重肝脏疾病。通常在出生后24小时内接种。</p>
+<div class="flex justify-between items-center pt-4 border-t border-surface-variant">
+<span class="text-xs text-secondary/60 italic">接种日期：2024年5月12日</span>
+<button class="text-primary font-bold text-sm flex items-center gap-1 hover:underline" onclick="openCertModal('乙肝疫苗 (HepB)', '2024年5月12日')">
+                            查看证书 <span class="material-symbols-outlined text-sm">open_in_new</span>
+</button>
+</div>
+</div>
+<!-- Vaccine Card 2: RV/DTaP/Hib -->
+<div class="vaccine-card group bg-white p-8 rounded-lg shadow-[0_10px_25px_-5px_rgba(200,180,150,0.15)] border-2 border-surface-variant transition-all hover:translate-y-[-4px]" data-status="Completed" data-name="RV, DTaP, Hib" data-date="2024年7月15日" data-section="0-6">
+<div class="flex justify-between items-start mb-6">
+<div class="flex items-center gap-3">
+<div class="w-12 h-12 rounded-full bg-secondary-container/30 flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined">vaccines</span>
+</div>
+<div>
+<h4 class="font-headline-md text-[20px] leading-tight">RV, DTaP, Hib</h4>
+<p class="text-xs text-secondary font-medium">2个月剂次</p>
+</div>
+</div>
+<span class="px-3 py-1 rounded-full bg-green-100 text-green-700 font-label-md text-[12px] flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                            已完成
+                        </span>
+</div>
+<p class="text-secondary font-body-md mb-6 leading-relaxed">联合预防轮状病毒、白喉、破伤风、百日咳以及b型流感嗜血杆菌。</p>
+<div class="flex justify-between items-center pt-4 border-t border-surface-variant">
+<span class="text-xs text-secondary/60 italic">接种日期：2024年7月15日</span>
+<button class="text-primary font-bold text-sm flex items-center gap-1 hover:underline" onclick="openCertModal('RV, DTaP, Hib', '2024年7月15日')">
+                            查看详情 <span class="material-symbols-outlined text-sm">info</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<!-- 6-12 Months -->
+<section id="section-6-12">
+<div class="flex items-center gap-4 mb-8">
+<div class="h-10 w-2 bg-secondary rounded-full"></div>
+<h3 class="font-headline-md text-headline-md text-primary">6 - 12 个月</h3>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8" id="list-6-12">
+<!-- Vaccine Card 3: Influenza Pending -->
+<div class="vaccine-card group bg-white p-8 rounded-lg shadow-[0_10px_25px_-5px_rgba(200,180,150,0.15)] border-2 border-tertiary-fixed transition-all hover:translate-y-[-4px] relative overflow-hidden" data-status="Pending" data-name="流感疫苗 (Influenza)" data-date="下个月" data-section="6-12">
+<div class="absolute top-0 right-0 p-2">
+<div class="w-2 h-2 rounded-full bg-tertiary animate-pulse"></div>
+</div>
+<div class="flex justify-between items-start mb-6">
+<div class="flex items-center gap-3">
+<div class="w-12 h-12 rounded-full bg-tertiary-container flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined">vaccines</span>
+</div>
+<div>
+<h4 class="font-headline-md text-[20px] leading-tight">流感疫苗 (Influenza)</h4>
+<p class="text-xs text-secondary font-medium">第一剂</p>
+</div>
+</div>
+<span class="px-3 py-1 rounded-full bg-tertiary-container text-tertiary font-label-md text-[12px] flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">schedule</span>
+                            待接种
+                        </span>
+</div>
+<p class="text-secondary font-body-md mb-6 leading-relaxed">建议从6个月大开始每年接种，以预防季节性流感及其并发症。</p>
+<div class="flex justify-between items-center pt-4 border-t border-surface-variant">
+<span class="text-xs text-tertiary font-bold">截止日期：下个月</span>
+<button class="squishy-btn px-4 py-2 bg-tertiary text-white rounded-lg text-sm font-bold shadow-md" onclick="openReminderModal('流感疫苗 (Influenza)')">
+                            设置提醒
+                        </button>
+</div>
+</div>
+<!-- Vaccine Card 4: PCV13 Overdue -->
+<div class="vaccine-card group bg-white p-8 rounded-lg shadow-[0_10px_25px_-5px_rgba(200,180,150,0.1)] border-2 border-error/10 transition-all hover:translate-y-[-4px]" data-status="Overdue" data-name="肺炎球菌疫苗 (PCV13)" data-date="已逾期12天" data-section="6-12">
+<div class="flex justify-between items-start mb-6">
+<div class="flex items-center gap-3">
+<div class="w-12 h-12 rounded-full bg-error-container/30 flex items-center justify-center text-error">
+<span class="material-symbols-outlined">report</span>
+</div>
+<div>
+<h4 class="font-headline-md text-[20px] leading-tight">肺炎球菌疫苗 (PCV13)</h4>
+<p class="text-xs text-secondary font-medium">第3剂</p>
+</div>
+</div>
+<span class="px-3 py-1 rounded-full bg-error-container text-error font-label-md text-[12px] flex items-center gap-1 font-bold">
+<span class="material-symbols-outlined text-[14px]">warning</span>
+                            已逾期
+                        </span>
+</div>
+<p class="text-secondary font-body-md mb-6 leading-relaxed">肺炎球菌结合疫苗，保护免受导致耳部感染、脑膜炎和肺炎的细菌侵害。</p>
+<div class="flex justify-between items-center pt-4 border-t border-surface-variant">
+<span class="text-xs text-error font-bold">已逾期 12 天</span>
+<button class="squishy-btn px-4 py-2 bg-error text-white rounded-lg text-sm font-bold shadow-md" onclick="handleCallClinic()">
+                            致电门诊
+                        </button>
+</div>
+</div>
+</div>
+</section>
+</div>
+</main>
+<footer class="w-full py-6 mt-section-gap border-t border-outline-variant flex items-center justify-center gap-6 px-4">
+  <span class="text-sm text-secondary/60">©cch（to the best one's ability）</span>
+  <button onclick="showAbout()" class="text-sm text-secondary/50 hover:text-primary transition-colors underline underline-offset-4 cursor-pointer">关于我们</button>
+</footer>
+<!-- About Panel -->
+<div id="about-panel" class="fixed inset-0 z-50 flex items-center justify-center bg-black/25 backdrop-blur-sm hidden" onclick="if(event.target===this) hideAbout()">
+  <div class="bg-white rounded-2xl shadow-xl p-8 max-w-xs w-full mx-4 text-center animate-in">
+    <p class="text-2xl font-bold" style="color:#5a5243;">cch</p>
+    <button onclick="hideAbout()" class="mt-5 text-sm text-secondary/50 hover:text-secondary underline underline-offset-4 transition-colors cursor-pointer">关闭</button>
+  </div>
+</div>
+<!-- FAB -->
+<button class="fixed bottom-8 right-8 w-16 h-16 bg-tertiary text-white rounded-full shadow-[0_10px_25px_-5px_rgba(105,90,100,0.4)] flex items-center justify-center squishy-btn z-50 group hover:w-48 transition-all duration-300 overflow-hidden fab-pulse" onclick="openAddRecordModal()">
+<span class="material-symbols-outlined transition-transform duration-300 group-hover:translate-x-[-40px]">add</span>
+<span class="absolute right-6 opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap font-bold text-sm">添加记录</span>
+</button>
+<script>
+    // --- Auth ---
+    async function handleLogout() {
+        await AuthAPI.logout();
+        window.location.href = '/login.html';
+    }
+
+    let allVaccines = [];
+
+    // --- Toast System ---
+    function showToast(message) {
+        const container = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        toast.className = 'toast bg-primary text-white px-5 py-3 rounded-lg shadow-lg font-label-md text-label-md pointer-events-auto flex items-center gap-2';
+        toast.innerHTML = `<span>${message}</span>`;
+        container.appendChild(toast);
+        setTimeout(() => {
+            toast.classList.add('hiding');
+            setTimeout(() => toast.remove(), 300);
+        }, 2500);
+    }
+
+    // --- Modal: Reminder ---
+    let currentReminderVaccine = '';
+    function openReminderModal(vaccineName) {
+        currentReminderVaccine = vaccineName;
+        document.getElementById('reminder-vaccine-name').textContent = `为 "${vaccineName}" 设置接种提醒`;
+        const modal = document.getElementById('reminder-modal');
+        modal.style.display = 'flex';
+        // Set default date to next month
+        const d = new Date();
+        d.setMonth(d.getMonth() + 1);
+        document.getElementById('reminder-date').value = d.toISOString().split('T')[0];
+    }
+    function closeReminderModal() {
+        document.getElementById('reminder-modal').style.display = 'none';
+        currentReminderVaccine = '';
+    }
+    function confirmReminder() {
+        const date = document.getElementById('reminder-date').value;
+        const time = document.getElementById('reminder-time').value;
+        if (!date) { showToast('请选择提醒日期 📅'); return; }
+        showToast(`✅ 已为 "${currentReminderVaccine}" 设置提醒：${date} ${time}`);
+        closeReminderModal();
+    }
+
+    // --- Modal: Certificate ---
+    function openCertModal(name, date) {
+        document.getElementById('cert-vaccine-title').textContent = name;
+        document.getElementById('cert-vaccine-date').textContent = `接种日期：${date}`;
+        document.getElementById('cert-modal').style.display = 'flex';
+    }
+    function closeCertModal() {
+        document.getElementById('cert-modal').style.display = 'none';
+    }
+
+    // --- Modal: Add Record ---
+    function openAddRecordModal() {
+        document.getElementById('add-record-modal').style.display = 'flex';
+        document.getElementById('add-vaccine-date').value = new Date().toISOString().split('T')[0];
+    }
+    function closeAddRecordModal() {
+        document.getElementById('add-record-modal').style.display = 'none';
+    }
+    async function confirmAddRecord() {
+        const name = document.getElementById('add-vaccine-name').value.trim();
+        const dose = document.getElementById('add-vaccine-dose').value.trim();
+        const date = document.getElementById('add-vaccine-date').value;
+        const status = document.getElementById('add-vaccine-status').value;
+        const desc = document.getElementById('add-vaccine-desc').value.trim();
+
+        if (!name) { showToast('请输入疫苗名称 💉'); return; }
+        if (!date) { showToast('请选择接种日期 📅'); return; }
+
+        try {
+            const payload = {
+                childId: 1,
+                name: name,
+                dose: dose || null,
+                scheduledDate: date,
+                administeredDate: status === 'Completed' ? date : null,
+                status: status,
+                description: desc || null,
+                clinicName: '社区卫生中心',
+                doctorName: '张医生',
+                ageGroup: '6-12'
+            };
+            await VaccineAPI.create(payload);
+            closeAddRecordModal();
+            showToast(`✅ "${name}" 记录已添加！`);
+            document.getElementById('add-vaccine-name').value = '';
+            document.getElementById('add-vaccine-dose').value = '';
+            document.getElementById('add-vaccine-desc').value = '';
+            await loadVaccines();
+        } catch (err) {
+            showToast('保存失败，请重试');
+        }
+    }
+
+    // --- Filter ---
+    function filterVaccines(status) {
+        const cards = document.querySelectorAll('.vaccine-card');
+        const btns = {
+            'all': document.getElementById('btn-all'),
+            'Pending': document.getElementById('btn-todo'),
+            'Completed': document.getElementById('btn-completed')
+        };
+
+        // Reset buttons
+        Object.values(btns).forEach(btn => {
+            btn.classList.remove('bg-primary', 'text-on-primary', 'shadow-lg');
+            btn.classList.add('bg-white', 'border-2', 'border-primary-container', 'text-primary', 'shadow-sm');
+        });
+
+        // Set active button
+        const active = btns[status];
+        if (active) {
+            active.classList.remove('bg-white', 'border-2', 'border-primary-container', 'text-primary', 'shadow-sm');
+            active.classList.add('bg-primary', 'text-on-primary', 'shadow-lg');
+        }
+
+        let anyVisible = false;
+        cards.forEach((card, i) => {
+            let shouldShow = status === 'all'
+                || (status === 'Pending' && (card.dataset.status === 'Pending' || card.dataset.status === 'Overdue'))
+                || card.dataset.status === status;
+
+            if (shouldShow) {
+                card.classList.remove('hiding');
+                card.classList.add('showing');
+                card.style.display = 'block';
+                anyVisible = true;
+            } else {
+                card.classList.remove('showing');
+                card.classList.add('hiding');
+                card.addEventListener('animationend', function handler() {
+                    card.style.display = 'none';
+                    card.classList.remove('hiding');
+                    card.removeEventListener('animationend', handler);
+                });
+            }
+        });
+
+        // Toggle empty sections
+        ['0-6', '6-12'].forEach(range => {
+            const section = document.getElementById(`section-${range}`);
+            const list = document.getElementById(`list-${range}`);
+            const visibleCards = list ? Array.from(list.querySelectorAll('.vaccine-card')).filter(c => c.style.display !== 'none') : [];
+            if (visibleCards.length === 0 && status !== 'all') {
+                section.style.opacity = '0';
+                section.style.maxHeight = '0';
+                section.style.overflow = 'hidden';
+                section.style.transition = 'all 0.4s ease';
+            } else {
+                section.style.opacity = '1';
+                section.style.maxHeight = '2000px';
+                section.style.overflow = 'visible';
+            }
+        });
+
+        updateStats();
+    }
+
+    // --- Update Stats ---
+    function updateStats() {
+        const allCards = document.querySelectorAll('.vaccine-card');
+        const completed = Array.from(allCards).filter(c => c.dataset.status === 'Completed').length;
+        const total = allCards.length;
+        document.getElementById('stat-completed').textContent = completed;
+        document.getElementById('stat-total').textContent = total;
+        const pct = total > 0 ? Math.round((completed / total) * 100) : 0;
+        const bar = document.getElementById('stat-progress-bar');
+        bar.style.width = pct + '%';
+
+        // Update next vaccine info
+        const pending = Array.from(allCards).find(c => c.dataset.status === 'Pending' || c.dataset.status === 'Overdue');
+        if (pending) {
+            document.getElementById('stat-next').textContent = pending.dataset.name || '待接种';
+            document.getElementById('stat-next-desc').textContent = pending.dataset.status === 'Overdue' ? '⚠️ 已逾期，请尽快处理' : '待接种';
+        }
+    }
+
+    // --- Call Clinic ---
+    function handleCallClinic() {
+        if (confirm('是否模拟致电社区卫生中心？\n\n📞 联系电话：010-1234-5678\n📍 地址：幸福街道社区卫生服务中心')) {
+            showToast('📞 正在为您接通社区卫生中心…');
+            setTimeout(() => showToast('✅ 预约成功！请于本周五上午前往接种'), 1500);
+        }
+    }
+
+    // --- Keyboard: ESC closes modals ---
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            closeReminderModal();
+            closeCertModal();
+            closeAddRecordModal();
+        }
+    });
+
+    // --- Load vaccines from API ---
+    async function loadVaccines() {
+        try {
+            const res = await VaccineAPI.list(1);
+            if (res.success && res.data) {
+                allVaccines = res.data;
+                renderVaccineCards(res.data);
+                updateStats();
+            }
+        } catch (err) {
+            console.error('Load vaccines error:', err);
+        }
+    }
+
+    function renderVaccineCards(vaccines) {
+        // Populate lists by age group
+        const list06 = document.getElementById('list-0-6');
+        const list612 = document.getElementById('list-6-12');
+        list06.innerHTML = ''; list612.innerHTML = '';
+
+        const statusLabels = {
+            'Completed': { cls: 'bg-green-100 text-green-700', icon: 'check_circle', text: '已完成' },
+            'Pending': { cls: 'bg-tertiary-container text-tertiary', icon: 'schedule', text: '待接种' },
+            'Overdue': { cls: 'bg-error-container text-error', icon: 'warning', text: '已逾期' }
+        };
+
+        vaccines.forEach(v => {
+            const sl = statusLabels[v.status] || statusLabels['Pending'];
+            const dateStr = v.administeredDate || v.scheduledDate || '';
+            const list = (v.ageGroup === '0-6') ? list06 : list612;
+
+            const card = document.createElement('div');
+            card.className = 'vaccine-card group bg-white p-8 rounded-lg shadow-[0_10px_25px_-5px_rgba(200,180,150,0.15)] border-2 border-surface-variant transition-all hover:translate-y-[-4px]';
+            card.dataset.status = v.status;
+            card.dataset.name = v.name;
+            card.dataset.date = dateStr;
+            card.dataset.id = v.id;
+            card.innerHTML = `
+                <div class="flex justify-between items-start mb-6">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 rounded-full bg-secondary-container/30 flex items-center justify-center text-secondary">
+                            <span class="material-symbols-outlined">vaccines</span>
+                        </div>
+                        <div>
+                            <h4 class="font-headline-md text-[20px] leading-tight">${v.name}</h4>
+                            <p class="text-xs text-secondary font-medium">${v.dose || ''}</p>
+                        </div>
+                    </div>
+                    <span class="px-3 py-1 rounded-full ${sl.cls} font-label-md text-[12px] flex items-center gap-1">
+                        <span class="material-symbols-outlined text-[14px]" style="font-variation-settings:'FILL'1;">${sl.icon}</span>${sl.text}
+                    </span>
+                </div>
+                <p class="text-secondary font-body-md mb-6 leading-relaxed">${v.description || '疫苗记录'}</p>
+                <div class="flex justify-between items-center pt-4 border-t border-surface-variant">
+                    <span class="text-xs text-secondary/60 italic">${v.administeredDate ? '接种日期：' + v.administeredDate : '计划日期：' + (v.scheduledDate || '待定')}</span>
+                    <div class="flex gap-2">
+                        ${v.status === 'Completed' ? `<button class="text-primary font-bold text-sm flex items-center gap-1 hover:underline" onclick="openCertModal('${v.name}', '${dateStr}')">查看证书 <span class="material-symbols-outlined text-sm">open_in_new</span></button>` : ''}
+                        <button class="text-error/70 hover:text-error font-label-md text-label-md hover:underline" onclick="deleteVaccine(${v.id})">删除</button>
+                    </div>
+                </div>`;
+            list.appendChild(card);
+        });
+
+        if (list06.children.length === 0) {
+            list06.innerHTML = '<div class="col-span-2 text-center text-secondary text-sm py-8">暂无记录</div>';
+        }
+        if (list612.children.length === 0) {
+            list612.innerHTML = '<div class="col-span-2 text-center text-secondary text-sm py-8">暂无记录</div>';
+        }
+    }
+
+    async function deleteVaccine(id) {
+        if (!confirm('确定删除该疫苗记录吗？')) return;
+        try {
+            await VaccineAPI.delete(id);
+            showToast('记录已删除 🗑️');
+            await loadVaccines();
+        } catch (err) {
+            showToast('删除失败');
+        }
+    }
+
+    // --- Initial stats ---
+    (async function() {
+        const user = await checkAuth();
+        if (!user) return;
+        updateStats();
+        await loadVaccines();
+    })();
+
+    function showAbout() { document.getElementById('about-panel').classList.remove('hidden'); }
+    function hideAbout() { document.getElementById('about-panel').classList.add('hidden'); }
+</script>
+
+
+</body></html>

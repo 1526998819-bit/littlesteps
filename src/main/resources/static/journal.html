@@ -1,0 +1,474 @@
+<!DOCTYPE html><html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>LittleSteps - 每日日志</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&family=Be+Vietnam+Pro:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+<script src="api.js"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-primary-fixed-variant": "#4a4739",
+                    "secondary-fixed": "#d3e5f1",
+                    "primary-fixed": "#e8e2cf",
+                    "on-tertiary-container": "#7e6e78",
+                    "on-secondary-fixed-variant": "#384953",
+                    "on-tertiary-fixed-variant": "#51434c",
+                    "on-secondary": "#ffffff",
+                    "surface-bright": "#f8f9ff",
+                    "surface-variant": "#d9e3f4",
+                    "tertiary-container": "#fff7f9",
+                    "secondary-fixed-dim": "#b7c9d5",
+                    "surface": "#f8f9ff",
+                    "outline": "#7a776e",
+                    "tertiary": "#695a64",
+                    "on-error": "#ffffff",
+                    "tertiary-fixed": "#f1dde9",
+                    "on-surface-variant": "#49473f",
+                    "on-secondary-fixed": "#0c1e26",
+                    "on-surface": "#121c28",
+                    "on-secondary-container": "#566771",
+                    "inverse-surface": "#27313e",
+                    "background": "#f8f9ff",
+                    "on-error-container": "#93000a",
+                    "surface-container": "#e5eeff",
+                    "on-primary-container": "#767262",
+                    "inverse-on-surface": "#eaf1ff",
+                    "on-tertiary": "#ffffff",
+                    "on-background": "#121c28",
+                    "on-primary": "#ffffff",
+                    "tertiary-fixed-dim": "#d5c1cd",
+                    "surface-container-low": "#eef4ff",
+                    "outline-variant": "#cbc6bb",
+                    "error-container": "#ffdad6",
+                    "primary-fixed-dim": "#ccc6b4",
+                    "surface-container-highest": "#d9e3f4",
+                    "surface-dim": "#d1dbec",
+                    "surface-tint": "#625f4f",
+                    "primary": "#625f4f",
+                    "error": "#ba1a1a",
+                    "primary-container": "#fff9e5",
+                    "on-tertiary-fixed": "#231820",
+                    "on-primary-fixed": "#1e1c10",
+                    "surface-container-high": "#dfe9fa",
+                    "secondary": "#50616b",
+                    "secondary-container": "#d3e5f1",
+                    "surface-container-lowest": "#ffffff",
+                    "inverse-primary": "#ccc6b4"
+            },
+            "borderRadius": {
+                    "DEFAULT": "1rem",
+                    "lg": "2rem",
+                    "xl": "3rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "base": "8px",
+                    "section-gap": "64px",
+                    "container-padding-mobile": "20px",
+                    "container-padding-desktop": "40px",
+                    "gutter": "24px"
+            },
+            "fontFamily": {
+                    "display-lg-mobile": ["Quicksand"],
+                    "body-md": ["Be Vietnam Pro"],
+                    "label-md": ["Quicksand"],
+                    "display-lg": ["Quicksand"],
+                    "body-lg": ["Be Vietnam Pro"],
+                    "headline-md": ["Quicksand"]
+            },
+            "fontSize": {
+                    "display-lg-mobile": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Be Vietnam Pro', sans-serif; background-color: #f8f9ff; }
+        .font-display { font-family: 'Quicksand', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .glass-card { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.3); }
+        .squishy-button:active { transform: scale(0.96); transition: transform 0.1s ease; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeOut {
+            from { opacity: 1; transform: scale(1); }
+            to { opacity: 0; transform: scale(0.9); }
+        }
+        @keyframes slideDown {
+            from { opacity: 0; max-height: 0; transform: translateY(-8px); }
+            to { opacity: 1; max-height: 500px; transform: translateY(0); }
+        }
+        @keyframes popIn {
+            from { transform: scale(0); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        @keyframes toastSlide {
+            from { opacity: 0; transform: translateY(-100%); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .entry-card { animation: fadeInUp 0.4s ease forwards; }
+        .entry-card.removing { animation: fadeOut 0.3s ease forwards; }
+        .quick-btn.active-type {
+            box-shadow: 0 0 0 3px rgba(98, 95, 79, 0.3);
+            transform: scale(1.05);
+        }
+        .feed-enter { animation: slideDown 0.5s ease forwards; overflow: hidden; }
+        .toast-top { animation: toastSlide 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        .stat-badge { animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+    </style>
+</head>
+<body class="bg-background text-on-surface">
+<!-- Toast -->
+<div id="toast-top" class="fixed top-6 left-1/2 -translate-x-1/2 z-[100] pointer-events-none"></div>
+
+<!-- TopNavBar -->
+<nav class="bg-surface dark:bg-surface-dim docked full-width top-0 z-50 fixed w-full shadow-sm shadow-primary/10">
+<div class="flex justify-between items-center px-container-padding-mobile md:px-container-padding-desktop h-20 w-full max-w-[1200px] mx-auto">
+<div class="font-display-lg text-headline-md text-primary dark:text-primary-fixed-dim font-bold">LittleSteps</div>
+<div class="hidden md:flex gap-8 items-center">
+<a class="text-on-surface-variant hover:text-primary transition-colors font-display text-label-md" href="dashboard.html">控制面板</a>
+<a class="text-primary font-bold border-b-2 border-primary pb-1 font-display text-label-md" href="#">每日日志</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-display text-label-md" href="growth.html">成长轨迹</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-display text-label-md" href="vaccine.html">疫苗计划</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-display text-label-md" href="gallery.html">精彩瞬间</a>
+</div>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-error text-2xl cursor-pointer hover:bg-error-container/50 p-2 rounded-lg transition-all active:scale-95" onclick="handleLogout()" title="退出登录">logout</span>
+</div>
+</div>
+</nav>
+<main class="pt-24 pb-20 max-w-[1200px] mx-auto px-container-padding-mobile md:px-container-padding-desktop">
+<!-- Header Section -->
+<header class="mb-10 text-center md:text-left">
+<h1 class="font-display-lg text-display-lg-mobile md:text-display-lg text-on-background mb-2">小宜蓁的每日动态 <span class="text-primary-container bg-primary px-3 py-1 rounded-full text-label-md align-middle ml-2 font-normal" id="entry-count-badge">0条记录</span></h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant">记录小宜蓁的喂养、睡眠及更多信息。记录宝宝成长的每一刻。</p>
+</header>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+<!-- Left Column: Actions and Feed -->
+<div class="lg:col-span-8 space-y-10">
+<!-- Quick Log Action Cards (Bento Style) -->
+<section>
+<h2 class="font-display text-headline-md mb-6 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary" data-icon="bolt">bolt</span> 快速记录
+</h2>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+<!-- Feeding -->
+<button class="quick-btn flex flex-col items-center justify-center p-6 bg-primary-container/40 hover:bg-primary-container/80 transition-all rounded-lg shadow-sm group squishy-button" data-type="饮食" onclick="quickSelect('饮食', this)">
+<div class="w-14 h-14 rounded-full bg-white flex items-center justify-center mb-3 shadow-sm group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-primary text-3xl" data-icon="baby_changing_station">baby_changing_station</span>
+</div>
+<span class="font-display text-label-md text-on-primary-container">饮食</span>
+</button>
+<!-- Sleep -->
+<button class="quick-btn flex flex-col items-center justify-center p-6 bg-secondary-container/40 hover:bg-secondary-container/80 transition-all rounded-lg shadow-sm group squishy-button" data-type="睡眠" onclick="quickSelect('睡眠', this)">
+<div class="w-14 h-14 rounded-full bg-white flex items-center justify-center mb-3 shadow-sm group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-secondary text-3xl" data-icon="bedtime">bedtime</span>
+</div>
+<span class="font-display text-label-md text-on-secondary-container">睡眠</span>
+</button>
+<!-- Diaper -->
+<button class="quick-btn flex flex-col items-center justify-center p-6 bg-tertiary-fixed/30 hover:bg-tertiary-fixed/50 transition-all rounded-lg shadow-sm group squishy-button" data-type="换尿布" onclick="quickSelect('换尿布', this)">
+<div class="w-14 h-14 rounded-full bg-white flex items-center justify-center mb-3 shadow-sm group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-tertiary text-3xl" data-icon="clean_hands">clean_hands</span>
+</div>
+<span class="font-display text-label-md text-tertiary">换尿布</span>
+</button>
+<!-- Mood -->
+<button class="quick-btn flex flex-col items-center justify-center p-6 bg-surface-variant/40 hover:bg-surface-variant/80 transition-all rounded-lg shadow-sm group squishy-button" data-type="情绪" onclick="quickSelect('情绪', this)">
+<div class="w-14 h-14 rounded-full bg-white flex items-center justify-center mb-3 shadow-sm group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-on-surface-variant text-3xl" data-icon="mood">mood</span>
+</div>
+<span class="font-display text-label-md text-on-surface-variant">情绪</span>
+</button>
+</div>
+</section>
+<!-- Recent Activity Feed -->
+<section>
+<div class="flex justify-between items-end mb-6">
+<h2 class="font-display text-headline-md flex items-center gap-2">
+<span class="material-symbols-outlined text-primary" data-icon="history">history</span> 今日日志
+</h2>
+<button class="text-primary font-display text-label-md hover:underline" onclick="clearAllEntries()" id="btn-clear-all" style="display:none;">清空全部</button>
+</div>
+<div id="feed-container" class="space-y-4">
+    <div id="empty-state" class="text-center py-10 bg-surface-container-lowest rounded-lg border-2 border-dashed border-outline-variant">
+        <span class="material-symbols-outlined text-outline-variant text-4xl mb-2" data-icon="history_toggle_off">history_toggle_off</span>
+        <p class="font-body-md text-on-surface-variant">今日暂无记录</p>
+        <p class="text-xs text-secondary/60 mt-1">点击上方快速记录按钮或填写右侧表单开始记录</p>
+    </div>
+</div>
+</section>
+</div>
+<!-- Right Column: Detailed Entry Form -->
+<aside class="lg:col-span-4">
+<div class="sticky top-28 bg-white p-8 rounded-lg shadow-lg border-2 border-primary-container">
+<h2 class="font-display text-headline-md mb-6">新增记录 <span class="text-on-surface-variant font-normal block text-label-md">New Entry</span></h2>
+<form id="entry-form" class="space-y-6" onsubmit="handleFormSubmit(event)">
+    <div>
+        <label class="block font-display text-label-md text-on-surface-variant mb-2">记录类型</label>
+        <select id="entry-type" class="w-full bg-surface-container-low border-none rounded-lg p-3 font-body-md focus:ring-4 focus:ring-primary-fixed ring-opacity-50 transition-all">
+            <option value="饮食">饮食 喂养</option>
+            <option value="睡眠">睡眠 休息</option>
+            <option value="换尿布">换尿布 护理</option>
+            <option value="情绪">情绪 心情</option>
+            <option value="其他">其他 记录</option>
+        </select>
+    </div>
+    <div>
+        <label class="block font-display text-label-md text-on-surface-variant mb-2">记录时间</label>
+        <input id="entry-time" class="w-full bg-surface-container-low border-none rounded-lg p-3 font-body-md focus:ring-4 focus:ring-primary-fixed ring-opacity-50 transition-all" type="time" value="">
+    </div>
+    <div>
+        <label class="block font-display text-label-md text-on-surface-variant mb-2">数量/持续时间</label>
+        <div class="relative">
+            <input id="entry-amount" class="w-full bg-surface-container-low border-none rounded-lg p-3 font-body-md focus:ring-4 focus:ring-primary-fixed ring-opacity-50 transition-all" placeholder="例如: 150ml 或 2小时" type="text">
+            <span class="absolute right-3 top-3 material-symbols-outlined text-outline-variant" data-icon="edit">edit</span>
+        </div>
+    </div>
+    <div>
+        <label class="block font-display text-label-md text-on-surface-variant mb-2">备注</label>
+        <textarea id="entry-note" class="w-full bg-surface-container-low border-none rounded-lg p-3 font-body-md focus:ring-4 focus:ring-primary-fixed ring-opacity-50 transition-all" placeholder="记录一些特别的细节..." rows="3"></textarea>
+    </div>
+    <button class="w-full bg-primary text-white font-display text-headline-md py-4 rounded-lg shadow-md hover:shadow-xl transition-all squishy-button flex items-center justify-center gap-2" type="submit" id="submit-btn">
+        <span class="material-symbols-outlined" data-icon="add_circle">add_circle</span> 保存记录
+    </button>
+</form>
+<!-- Decorative Card Image -->
+<div class="mt-8 rounded-lg overflow-hidden relative h-32 group">
+<img alt="婴儿护理" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" data-alt="一张温暖、柔焦的婴儿小手抓着父母手指的照片，在阳光充足的托儿所里。光线明亮柔和，营造出宁静祥和的氛围。构图亲密简约，强调了LittleSteps品牌的感性连接和温柔成长主题。" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAK2fkBrDv3CQYUtCNmVsuNARW24ot5NLoThtSjaeEK3c7Q2rVP7TnHuV_GdXNmj77E0rFXNr9UZGrVSZavlQL_TSWOGL7ZmZOrOXuBgUkjS05He4qtZdp14jW0D-WzX0CSW1gSKi5zRtV1zt_rHOhd9hQTPz0IGHyKig0XNxNdltvK5h-Wq3NpSoQMtQHQGCXVEtubxy7PaNB4taf28xLR6rc9i-biqptwK77KpSQO4BMF4x_NYlGomnl-95JvnYfLGinqRUJHU5U">
+<div class="absolute inset-0 bg-gradient-to-t from-primary/60 to-transparent flex items-end p-4">
+<span class="text-white font-display text-label-md">记录每一份爱</span>
+</div>
+</div>
+</div>
+</aside>
+</div>
+</main>
+<!-- Footer -->
+<footer class="w-full py-6 border-t border-outline-variant flex items-center justify-center gap-6 px-4">
+  <span class="text-sm text-secondary/60">©cch（to the best one's ability）</span>
+  <button onclick="showAbout()" class="text-sm text-secondary/50 hover:text-primary transition-colors underline underline-offset-4 cursor-pointer">关于我们</button>
+</footer>
+<!-- About Panel -->
+<div id="about-panel" class="fixed inset-0 z-50 flex items-center justify-center bg-black/25 backdrop-blur-sm hidden" onclick="if(event.target===this) hideAbout()">
+  <div class="bg-white rounded-2xl shadow-xl p-8 max-w-xs w-full mx-4 text-center animate-in">
+    <p class="text-2xl font-bold" style="color:#5a5243;">cch</p>
+    <button onclick="hideAbout()" class="mt-5 text-sm text-secondary/50 hover:text-secondary underline underline-offset-4 transition-colors cursor-pointer">关闭</button>
+  </div>
+</div>
+
+<script>
+    // --- Auth ---
+    async function handleLogout() {
+        await AuthAPI.logout();
+        window.location.href = '/login.html';
+    }
+
+    // --- Entry storage ---
+    let entries = [];
+    let editingId = null;
+
+    // --- Icon mapping ---
+    const typeIcons = {
+        'milestone': { icon: 'emoji_events', color: 'text-primary', bg: 'bg-primary-container/30' },
+        'daily': { icon: 'edit_note', color: 'text-secondary', bg: 'bg-secondary-container/30' },
+        'health': { icon: 'favorite', color: 'text-tertiary', bg: 'bg-tertiary-fixed/30' },
+        '饮食': { icon: 'restaurant', color: 'text-primary', bg: 'bg-primary-container/30' },
+        '睡眠': { icon: 'bedtime', color: 'text-secondary', bg: 'bg-secondary-container/30' },
+        '换尿布': { icon: 'clean_hands', color: 'text-tertiary', bg: 'bg-tertiary-fixed/30' },
+        '情绪': { icon: 'mood', color: 'text-on-surface-variant', bg: 'bg-surface-variant/40' },
+        '其他': { icon: 'more_horiz', color: 'text-secondary', bg: 'bg-surface-container-low' }
+    };
+
+    // --- Toast ---
+    function showToast(msg) {
+        const container = document.getElementById('toast-top');
+        const el = document.createElement('div');
+        el.className = 'toast-top bg-primary text-white px-6 py-3 rounded-lg shadow-lg font-label-md text-label-md mb-2 text-center';
+        el.textContent = msg;
+        container.appendChild(el);
+        setTimeout(() => { el.style.opacity = '0'; el.style.transition = 'opacity 0.3s'; });
+        setTimeout(() => el.remove(), 600);
+    }
+
+    // --- Quick select ---
+    function quickSelect(type, btn) {
+        document.getElementById('entry-type').value = type;
+        document.querySelectorAll('.quick-btn').forEach(b => b.classList.remove('active-type'));
+        btn.classList.add('active-type');
+        document.getElementById('entry-form').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        showToast(`已选择：${type}`);
+        const amountInput = document.getElementById('entry-amount');
+        const placeholders = { '饮食': '例如: 180ml 母乳', '睡眠': '例如: 2小时15分钟', '换尿布': '例如: 湿尿布', '情绪': '例如: 开心 😊', '其他': '记录细节...' };
+        amountInput.placeholder = placeholders[type] || '记录细节...';
+        amountInput.focus();
+    }
+
+    function setCurrentTime() {
+        document.getElementById('entry-time').value = new Date().toTimeString().slice(0, 5);
+    }
+
+    // --- Handle form submit ---
+    async function handleFormSubmit(e) {
+        e.preventDefault();
+        const type = document.getElementById('entry-type').value;
+        const time = document.getElementById('entry-time').value || new Date().toTimeString().slice(0, 5);
+        const amount = document.getElementById('entry-amount').value.trim();
+        const note = document.getElementById('entry-note').value.trim();
+
+        if (!amount && !note) { showToast('请至少填写数量或备注 ✏️'); return; }
+
+        const btn = document.getElementById('submit-btn');
+        const origHTML = btn.innerHTML;
+        btn.innerHTML = '<span class="material-symbols-outlined animate-spin">progress_activity</span> 保存中...';
+        btn.disabled = true;
+
+        try {
+            // Map quick-type to category
+            const catMap = { '饮食': 'daily', '睡眠': 'daily', '换尿布': 'daily', '情绪': 'daily', '其他': 'daily' };
+            await JournalAPI.create({
+                childId: 1,
+                entryDate: new Date().toISOString().split('T')[0],
+                title: type + ' - ' + amount,
+                content: note || amount,
+                mood: type === '情绪' ? amount : null,
+                category: catMap[type] || 'daily'
+            });
+
+            btn.innerHTML = '<span class="material-symbols-outlined">check_circle</span> 已保存';
+            btn.classList.add('bg-green-500');
+            await loadEntries();
+            resetForm();
+        } catch (err) {
+            showToast('保存失败，请重试');
+        } finally {
+            setTimeout(() => {
+                btn.innerHTML = origHTML;
+                btn.classList.remove('bg-green-500');
+                btn.disabled = false;
+            }, 1800);
+        }
+    }
+
+    function resetForm() {
+        document.getElementById('entry-type').value = '饮食';
+        document.getElementById('entry-amount').value = '';
+        document.getElementById('entry-note').value = '';
+        setCurrentTime();
+        editingId = null;
+        document.querySelectorAll('.quick-btn').forEach(b => b.classList.remove('active-type'));
+    }
+
+    // --- Load entries from API ---
+    async function loadEntries() {
+        try {
+            const res = await JournalAPI.list(1);
+            if (res.success && res.data) {
+                entries = res.data.map(e => ({
+                    id: e.id,
+                    type: e.category === 'milestone' ? '里程碑' : (e.mood || '日常'),
+                    time: e.entryDate || '',
+                    amount: e.title || '',
+                    note: e.content || ''
+                }));
+                renderFeed();
+            }
+        } catch (err) {
+            console.error('Load entries error:', err);
+        }
+    }
+
+    // --- Render feed ---
+    function renderFeed() {
+        const container = document.getElementById('feed-container');
+        const clearBtn = document.getElementById('btn-clear-all');
+        const badge = document.getElementById('entry-count-badge');
+
+        if (entries.length === 0) {
+            container.innerHTML = `<div id="empty-state" class="text-center py-10 bg-surface-container-lowest rounded-lg border-2 border-dashed border-outline-variant">
+                <span class="material-symbols-outlined text-outline-variant text-4xl mb-2">history_toggle_off</span>
+                <p class="font-body-md text-on-surface-variant">今日暂无记录</p>
+                <p class="text-xs text-secondary/60 mt-1">点击上方快速记录按钮或填写右侧表单开始记录</p></div>`;
+            clearBtn.style.display = 'none';
+            badge.textContent = '0条记录';
+            return;
+        }
+
+        clearBtn.style.display = 'block';
+        badge.textContent = entries.length + '条记录';
+        container.innerHTML = entries.map((entry, idx) => {
+            const ti = typeIcons[entry.type] || typeIcons['其他'];
+            return `<div class="entry-card bg-white p-6 rounded-lg shadow-sm border-2 border-surface-variant hover:border-primary-container/30 transition-all" style="animation-delay:${idx*0.05}s">
+                <div class="flex items-start justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full ${ti.bg} flex items-center justify-center">
+                            <span class="material-symbols-outlined ${ti.color}">${ti.icon}</span>
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <span class="font-display text-label-md text-on-surface">${entry.type}</span>
+                                <span class="text-xs text-secondary/60">${entry.time}</span>
+                            </div>
+                            ${entry.amount ? `<p class="font-body-md text-on-surface font-bold mt-1">${entry.amount}</p>` : ''}
+                            ${entry.note ? `<p class="text-sm text-secondary mt-1">${entry.note}</p>` : ''}
+                        </div>
+                    </div>
+                    <div class="flex gap-2">
+                        <button class="p-1.5 hover:bg-error-container/50 rounded-lg transition-all text-secondary hover:text-error" onclick="deleteEntry(${entry.id})" title="删除">
+                            <span class="material-symbols-outlined text-sm">delete</span>
+                        </button>
+                    </div>
+                </div></div>`;
+        }).join('');
+    }
+
+    async function deleteEntry(id) {
+        if (!confirm('确定删除该记录吗？')) return;
+        try {
+            await JournalAPI.delete(id);
+            await loadEntries();
+            showToast('记录已删除 🗑️');
+        } catch (err) {
+            showToast('删除失败');
+        }
+    }
+
+    async function clearAllEntries() {
+        if (entries.length === 0) return;
+        if (!confirm(`确定要清空全部 ${entries.length} 条记录吗？`)) return;
+        for (const e of entries) {
+            try { await JournalAPI.delete(e.id); } catch (err) {}
+        }
+        await loadEntries();
+        showToast('所有记录已清空');
+    }
+
+    // --- Bootstrap ---
+    (async function() {
+        const user = await checkAuth();
+        if (!user) return;
+        setCurrentTime();
+        await loadEntries();
+    })();
+
+    function showAbout() { document.getElementById('about-panel').classList.remove('hidden'); }
+    function hideAbout() { document.getElementById('about-panel').classList.add('hidden'); }
+</script>
+
+
+</body></html>

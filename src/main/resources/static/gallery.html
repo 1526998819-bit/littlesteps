@@ -1,0 +1,462 @@
+<!DOCTYPE html><html class="light" lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>成长相册 | LittleSteps</title>
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&family=Be+Vietnam+Pro:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script src="api.js"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-primary-fixed-variant": "#4a4739",
+                    "outline": "#7a776e",
+                    "on-primary-container": "#767262",
+                    "primary-fixed-dim": "#ccc6b4",
+                    "on-primary-fixed": "#1e1c10",
+                    "on-background": "#121c28",
+                    "surface-container-high": "#dfe9fa",
+                    "on-error-container": "#93000a",
+                    "surface-container": "#e5eeff",
+                    "error": "#ba1a1a",
+                    "surface-tint": "#625f4f",
+                    "surface": "#f8f9ff",
+                    "primary-fixed": "#e8e2cf",
+                    "surface-container-low": "#eef4ff",
+                    "surface-dim": "#d1dbec",
+                    "on-surface-variant": "#49473f",
+                    "background": "#f8f9ff",
+                    "surface-container-highest": "#d9e3f4",
+                    "on-tertiary": "#ffffff",
+                    "secondary-container": "#d3e5f1",
+                    "on-tertiary-container": "#7e6e78",
+                    "tertiary-fixed": "#f1dde9",
+                    "tertiary-container": "#fff7f9",
+                    "secondary-fixed": "#d3e5f1",
+                    "on-secondary-fixed-variant": "#384953",
+                    "primary-container": "#fff9e5",
+                    "on-secondary-fixed": "#0c1e26",
+                    "on-tertiary-fixed-variant": "#51434c",
+                    "surface-variant": "#d9e3f4",
+                    "on-error": "#ffffff",
+                    "on-secondary-container": "#566771",
+                    "tertiary": "#695a64",
+                    "inverse-surface": "#27313e",
+                    "on-primary": "#ffffff",
+                    "inverse-on-surface": "#eaf1ff",
+                    "secondary": "#50616b",
+                    "error-container": "#ffdad6",
+                    "surface-container-lowest": "#ffffff",
+                    "primary": "#625f4f",
+                    "on-tertiary-fixed": "#231820",
+                    "on-secondary": "#ffffff",
+                    "on-surface": "#121c28",
+                    "tertiary-fixed-dim": "#d5c1cd",
+                    "surface-bright": "#f8f9ff",
+                    "inverse-primary": "#ccc6b4",
+                    "secondary-fixed-dim": "#b7c9d5",
+                    "outline-variant": "#cbc6bb"
+            },
+            "borderRadius": {
+                    "DEFAULT": "1rem",
+                    "lg": "2rem",
+                    "xl": "3rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "gutter": "24px",
+                    "section-gap": "64px",
+                    "container-padding-desktop": "40px",
+                    "base": "8px",
+                    "container-padding-mobile": "20px"
+            },
+            "fontFamily": {
+                    "headline-md": ["Quicksand"],
+                    "label-md": ["Quicksand"],
+                    "display-lg-mobile": ["Quicksand"],
+                    "body-md": ["Be Vietnam Pro"],
+                    "display-lg": ["Quicksand"],
+                    "body-lg": ["Be Vietnam Pro"]
+            },
+            "fontSize": {
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                    "display-lg-mobile": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .masonry {
+            column-count: 1;
+            column-gap: 24px;
+        }
+        @media (min-width: 768px) {
+            .masonry { column-count: 2; }
+        }
+        @media (min-width: 1024px) {
+            .masonry { column-count: 3; }
+        }
+        .masonry-item {
+            break-inside: avoid;
+            margin-bottom: 24px;
+        }
+        .squishy-btn:active {
+            transform: scale(0.96);
+            transition: transform 0.1s ease-in-out;
+        }
+        @keyframes cardIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes cardOut {
+            from { opacity: 1; transform: scale(1); }
+            to { opacity: 0; transform: scale(0.9); }
+        }
+        @keyframes lightboxIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes lightboxImgIn {
+            from { opacity: 0; transform: scale(0.85); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        @keyframes toastSlide {
+            from { opacity: 0; transform: translateY(-100%); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes heartPop {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.4); }
+            100% { transform: scale(1); }
+        }
+        .masonry-item.show { animation: cardIn 0.5s ease forwards; }
+        .masonry-item.hide { animation: cardOut 0.35s ease forwards; }
+        .lightbox-overlay { animation: lightboxIn 0.3s ease forwards; }
+        .lightbox-img { animation: lightboxImgIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        .toast-top { animation: toastSlide 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        .heart-anim { animation: heartPop 0.4s ease; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md selection:bg-tertiary-container selection:text-tertiary">
+<!-- Toast -->
+<div id="toast-top" class="fixed top-6 left-1/2 -translate-x-1/2 z-[100] pointer-events-none"></div>
+
+<!-- Lightbox -->
+<div id="lightbox" class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/85 lightbox-overlay" style="display:none;" onclick="closeLightbox()">
+    <button class="absolute top-6 right-6 text-white hover:text-tertiary-fixed transition-colors z-10" onclick="closeLightbox()">
+        <span class="material-symbols-outlined text-5xl">close</span>
+    </button>
+    <button class="absolute top-6 left-6 text-white hover:text-tertiary-fixed transition-colors z-10" onclick="event.stopPropagation(); prevPhoto()">
+        <span class="material-symbols-outlined text-5xl">chevron_left</span>
+    </button>
+    <button class="absolute top-6 right-20 text-white hover:text-tertiary-fixed transition-colors z-10" onclick="event.stopPropagation(); nextPhoto()">
+        <span class="material-symbols-outlined text-5xl">chevron_right</span>
+    </button>
+    <img id="lightbox-img" class="lightbox-img max-w-[90vw] max-h-[80vh] rounded-xl shadow-2xl object-contain" src="" alt="照片预览" onclick="event.stopPropagation()">
+    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-4">
+        <p id="lightbox-caption" class="text-white font-label-md text-label-md bg-black/50 px-4 py-2 rounded-full"></p>
+        <button id="lightbox-fav" class="text-white hover:text-red-400 transition-colors" onclick="event.stopPropagation(); toggleFav()">
+            <span class="material-symbols-outlined text-3xl" id="lightbox-fav-icon">favorite</span>
+        </button>
+    </div>
+</div>
+
+<!-- TopNavBar -->
+<nav class="bg-surface-container-lowest shadow-[0_10px_25px_-5px_rgba(200,180,150,0.2)] docked full-width top-0 z-50 sticky">
+<div class="flex justify-between items-center px-container-padding-desktop max-w-[1200px] mx-auto h-20 w-full">
+<div class="font-display-lg text-display-lg text-primary tracking-tighter">LittleSteps</div>
+<div class="hidden md:flex gap-8 items-center">
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors hover:bg-primary-container/50 rounded-xl px-3 py-1" href="dashboard.html">控制面板</a>
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors hover:bg-primary-container/50 rounded-xl px-3 py-1" href="journal.html">每日日志</a>
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors hover:bg-primary-container/50 rounded-xl px-3 py-1" href="growth.html">成长轨迹</a>
+<a class="text-on-surface-variant font-medium hover:text-primary transition-colors hover:bg-primary-container/50 rounded-xl px-3 py-1" href="vaccine.html">疫苗计划</a>
+<a class="text-tertiary font-bold border-b-4 border-tertiary-container pb-1 px-3" href="#">精彩瞬间</a>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 hover:bg-error-container/50 rounded-xl transition-all active:scale-95" onclick="handleLogout()" title="退出登录">
+<span class="material-symbols-outlined text-error">logout</span>
+</button>
+</div>
+</div>
+</nav>
+<main class="max-w-[1200px] mx-auto px-container-padding-mobile md:px-container-padding-desktop py-12">
+<!-- Header Section -->
+<header class="mb-12 text-center md:text-left">
+<h1 class="font-display-lg text-display-lg-mobile md:text-display-lg text-primary mb-2">小宜蓁的成长相册</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant" id="gallery-count">记录成长的每一个美好瞬间</p>
+</header>
+<!-- Category Filters -->
+<div class="flex overflow-x-auto pb-4 gap-4 no-scrollbar mb-12" id="filter-container">
+<button class="cat-btn bg-tertiary text-on-tertiary px-8 py-3 rounded-full font-label-md whitespace-nowrap shadow-md squishy-btn" data-cat="全部" onclick="filterGallery('全部', this)">全部</button>
+<button class="cat-btn bg-surface-container-high text-on-secondary-container px-8 py-3 rounded-full font-label-md whitespace-nowrap hover:bg-tertiary-container transition-colors squishy-btn" data-cat="新生儿" onclick="filterGallery('新生儿', this)">新生儿</button>
+<button class="cat-btn bg-surface-container-high text-on-secondary-container px-8 py-3 rounded-full font-label-md whitespace-nowrap hover:bg-tertiary-container transition-colors squishy-btn" data-cat="百天" onclick="filterGallery('百天', this)">百天</button>
+<button class="cat-btn bg-surface-container-high text-on-secondary-container px-8 py-3 rounded-full font-label-md whitespace-nowrap hover:bg-tertiary-container transition-colors squishy-btn" data-cat="周岁" onclick="filterGallery('周岁', this)">周岁</button>
+<button class="cat-btn bg-surface-container-high text-on-secondary-container px-8 py-3 rounded-full font-label-md whitespace-nowrap hover:bg-tertiary-container transition-colors squishy-btn" data-cat="家庭" onclick="filterGallery('家庭', this)">家庭</button>
+</div>
+<!-- Gallery Grid -->
+<div id="gallery" class="masonry"></div>
+</main>
+<!-- FAB -->
+<button class="fixed bottom-8 right-8 w-16 h-16 bg-tertiary text-on-tertiary rounded-full shadow-lg flex items-center justify-center hover:scale-110 active:scale-95 transition-all z-50 group" onclick="triggerUpload()">
+<span class="material-symbols-outlined text-3xl">add</span>
+<div class="absolute right-full mr-4 bg-primary text-on-primary px-4 py-2 rounded-xl text-sm font-bold opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+        添加点滴
+    </div>
+</button>
+<input type="file" id="file-upload" accept="image/*" multiple style="display:none;" onchange="handleFileUpload(event)">
+<!-- Footer -->
+<footer class="w-full py-6 border-t border-outline-variant flex items-center justify-center gap-6 px-4">
+  <span class="text-sm text-secondary/60">©cch（to the best one's ability）</span>
+  <button onclick="showAbout()" class="text-sm text-secondary/50 hover:text-primary transition-colors underline underline-offset-4 cursor-pointer">关于我们</button>
+</footer>
+<!-- About Panel -->
+<div id="about-panel" class="fixed inset-0 z-50 flex items-center justify-center bg-black/25 backdrop-blur-sm hidden" onclick="if(event.target===this) hideAbout()">
+  <div class="bg-white rounded-2xl shadow-xl p-8 max-w-xs w-full mx-4 text-center animate-in">
+    <p class="text-2xl font-bold" style="color:#5a5243;">cch</p>
+    <button onclick="hideAbout()" class="mt-5 text-sm text-secondary/50 hover:text-secondary underline underline-offset-4 transition-colors cursor-pointer">关闭</button>
+  </div>
+</div>
+
+<script>
+    // --- Auth ---
+    async function handleLogout() {
+        await AuthAPI.logout();
+        window.location.href = '/login.html';
+    }
+
+    // --- Photo data (loaded from API) ---
+    let photos = [];
+    let currentFilter = '全部';
+    let lightboxIndex = -1;
+    let filteredPhotos = [];
+
+    // --- Toast ---
+    function showToast(msg) {
+        const c = document.getElementById('toast-top');
+        const el = document.createElement('div');
+        el.className = 'toast-top bg-primary text-white px-6 py-3 rounded-lg shadow-lg font-label-md text-label-md mb-2 text-center';
+        el.textContent = msg;
+        c.appendChild(el);
+        setTimeout(() => { el.style.opacity = '0'; el.style.transition = 'opacity 0.3s'; }, 2000);
+        setTimeout(() => el.remove(), 2500);
+    }
+
+    // --- Render gallery ---
+    function renderGallery() {
+        const container = document.getElementById('gallery');
+        const countEl = document.getElementById('gallery-count');
+
+        if (currentFilter === '全部') {
+            filteredPhotos = [...photos];
+        } else {
+            filteredPhotos = photos.filter(p => p.cat === currentFilter);
+        }
+
+        countEl.textContent = filteredPhotos.length > 0
+            ? `共 ${filteredPhotos.length} 张照片 · ${currentFilter}`
+            : `暂无"${currentFilter}"分类的照片`;
+
+        container.innerHTML = '';
+
+        // Add "upload" card always at the beginning
+        const uploadCard = document.createElement('div');
+        uploadCard.className = 'masonry-item show';
+        uploadCard.style.animationDelay = '0s';
+        uploadCard.innerHTML = `
+            <div class="h-64 border-4 border-dashed border-outline-variant bg-surface-container-low rounded-xl flex flex-col items-center justify-center gap-4 hover:bg-primary-container/30 transition-all cursor-pointer group p-8" onclick="triggerUpload()">
+                <div class="w-16 h-16 rounded-full bg-primary-container flex items-center justify-center text-primary group-hover:scale-110 transition-transform shadow-sm">
+                    <span class="material-symbols-outlined text-4xl">add_a_photo</span>
+                </div>
+                <span class="font-headline-md text-headline-md text-primary">添加点滴</span>
+                <p class="text-center font-body-md text-on-surface-variant text-sm px-4">上传小宜蓁成长的新照片</p>
+            </div>`;
+        container.appendChild(uploadCard);
+
+        // Add photo cards
+        filteredPhotos.forEach((photo, idx) => {
+            const card = createPhotoCard(photo, idx + 1);
+            container.appendChild(card);
+        });
+    }
+
+    function createPhotoCard(photo, idx) {
+        const div = document.createElement('div');
+        div.className = 'masonry-item show';
+        div.style.animationDelay = (idx * 0.08) + 's';
+        div.dataset.cat = photo.cat;
+        div.dataset.id = photo.id;
+        div.innerHTML = `
+            <div class="relative group cursor-pointer rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-shadow" onclick="openLightbox(${photo.id})">
+                <img src="${photo.src}" alt="${photo.title}" class="w-full ${photo.h} object-cover group-hover:scale-105 transition-transform duration-500">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
+                    <h3 class="text-white font-headline-md text-headline-md mb-1">${photo.title}</h3>
+                    <p class="text-white/80 text-sm">${photo.desc}</p>
+                </div>
+                <span class="absolute top-3 left-3 px-3 py-1 bg-white/80 backdrop-blur-sm text-on-surface-variant text-xs rounded-full font-label-md">${photo.cat}</span>
+                <button class="absolute top-3 right-3 p-1.5 bg-white/80 rounded-full hover:bg-error/20 transition-all" onclick="event.stopPropagation(); deletePhoto(${photo.id})" title="删除">
+                    <span class="material-symbols-outlined text-error text-sm">delete</span>
+                </button>
+            </div>`;
+        return div;
+    }
+
+    // --- Filter ---
+    function filterGallery(cat, btn) {
+        currentFilter = cat;
+        document.querySelectorAll('.cat-btn').forEach(b => {
+            b.classList.remove('bg-tertiary', 'text-on-tertiary', 'shadow-md');
+            b.classList.add('bg-surface-container-high', 'text-on-secondary-container');
+        });
+        btn.classList.add('bg-tertiary', 'text-on-tertiary', 'shadow-md');
+        btn.classList.remove('bg-surface-container-high', 'text-on-secondary-container');
+        renderGallery();
+    }
+
+    // --- Lightbox ---
+    function openLightbox(photoId) {
+        lightboxIndex = filteredPhotos.findIndex(p => p.id === photoId);
+        if (lightboxIndex === -1) return;
+        showLightboxPhoto();
+        document.getElementById('lightbox').style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+
+    function showLightboxPhoto() {
+        const photo = filteredPhotos[lightboxIndex];
+        if (!photo) return;
+        document.getElementById('lightbox-img').src = photo.src;
+        document.getElementById('lightbox-caption').textContent = `${photo.title} · ${photo.desc}`;
+        document.getElementById('lightbox-fav-icon').textContent = 'favorite';
+        document.getElementById('lightbox-fav-icon').style.fontVariationSettings = photo.fav ? "'FILL' 1" : "'FILL' 0";
+        document.getElementById('lightbox-fav-icon').style.color = photo.fav ? '#ef4444' : 'white';
+    }
+
+    function closeLightbox() {
+        document.getElementById('lightbox').style.display = 'none';
+        document.body.style.overflow = '';
+        lightboxIndex = -1;
+    }
+
+    function nextPhoto() {
+        if (filteredPhotos.length === 0) return;
+        lightboxIndex = (lightboxIndex + 1) % filteredPhotos.length;
+        showLightboxPhoto();
+    }
+
+    function prevPhoto() {
+        if (filteredPhotos.length === 0) return;
+        lightboxIndex = (lightboxIndex - 1 + filteredPhotos.length) % filteredPhotos.length;
+        showLightboxPhoto();
+    }
+
+    function toggleFav() {
+        showToast('收藏功能开发中 ❤️');
+    }
+
+    // --- File upload ---
+    function triggerUpload() {
+        document.getElementById('file-upload').click();
+    }
+
+    async function handleFileUpload(e) {
+        const files = e.target.files;
+        if (files.length === 0) return;
+        try {
+            for (const file of Array.from(files)) {
+                // 1. 上传文件到 OSS
+                const formData = new FormData();
+                formData.append('file', file);
+                const uploadRes = await fetch('/api/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+                const uploadData = await uploadRes.json();
+                if (!uploadData.success) throw new Error(uploadData.message);
+
+                // 2. 用 OSS 返回的公网 URL 创建画廊记录
+                await GalleryAPI.create({
+                    childId: 1,
+                    url: uploadData.data.url,
+                    caption: file.name.replace(/\.[^.]+$/, ''),
+                    type: file.type.startsWith('video/') ? 'video' : 'photo',
+                    takenAt: new Date().toISOString()
+                });
+            }
+            showToast(`✅ ${files.length} 张照片上传成功！`);
+            await loadPhotos();
+        } catch (err) {
+            showToast('上传失败，请重试');
+        }
+        e.target.value = '';
+    }
+
+    async function deletePhoto(id) {
+        if (!confirm('确定删除该照片吗？')) return;
+        try {
+            await GalleryAPI.delete(id);
+            showToast('照片已删除 🗑️');
+            await loadPhotos();
+        } catch (err) {
+            showToast('删除失败');
+        }
+    }
+
+    // --- Keyboard ---
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closeLightbox();
+        if (document.getElementById('lightbox').style.display === 'flex') {
+            if (e.key === 'ArrowRight') nextPhoto();
+            if (e.key === 'ArrowLeft') prevPhoto();
+        }
+    });
+
+    // --- Load photos from API ---
+    async function loadPhotos() {
+        try {
+            const res = await GalleryAPI.list(1);
+            if (res.success && res.data) {
+                const heights = ['h-56', 'h-72', 'h-64', 'h-56', 'h-72', 'h-64', 'h-72', 'h-56'];
+                photos = res.data.map((p, i) => ({
+                    id: p.id,
+                    cat: '全部',
+                    title: p.caption || '照片',
+                    desc: p.takenAt ? new Date(p.takenAt).toLocaleDateString('zh-CN') : '',
+                    src: p.url,
+                    fav: false,
+                    h: heights[i % heights.length]
+                }));
+                renderGallery();
+            }
+        } catch (err) {
+            console.error('Load photos error:', err);
+        }
+    }
+
+    // --- Init ---
+    (async function() {
+        const user = await checkAuth();
+        if (!user) return;
+        await loadPhotos();
+    })();
+
+    function showAbout() { document.getElementById('about-panel').classList.remove('hidden'); }
+    function hideAbout() { document.getElementById('about-panel').classList.add('hidden'); }
+</script>
+
+
+</body></html>

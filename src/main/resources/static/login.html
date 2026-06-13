@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>登录 - LittleSteps 成长点滴</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&family=Be+Vietnam+Pro:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+<style>
+    body {
+        background: #f5f3ef;
+        background-image:
+            radial-gradient(ellipse at 20% 20%, rgba(180, 210, 200, 0.25) 0px, transparent 55%),
+            radial-gradient(ellipse at 80% 80%, rgba(220, 200, 180, 0.2) 0px, transparent 55%);
+        min-height: 100vh;
+        font-family: 'Be Vietnam Pro', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    }
+    .font-display { font-family: 'Quicksand', 'PingFang SC', sans-serif; }
+    .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        20%, 60% { transform: translateX(-6px); }
+        40%, 80% { transform: translateX(6px); }
+    }
+    .animate-in { animation: fadeInUp 0.6s ease forwards; }
+    .animate-shake { animation: shake 0.4s ease; }
+    .squishy-btn { transition: all 0.2s ease; }
+    .squishy-btn:active { transform: scale(0.96); }
+    /* Override some Tailwind form styles */
+    input:focus { outline: none !important; }
+</style>
+</head>
+<body class="flex flex-col items-center justify-center min-h-screen p-4">
+
+<div class="animate-in w-full max-w-[400px]">
+    <!-- Logo area -->
+    <div class="text-center mb-8">
+        <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-white shadow-md mb-4"
+             style="border: 2px solid #e8e2cf;">
+            <span class="material-symbols-outlined text-4xl" style="color:#8b7e6a;font-variation-settings:'FILL'1;">child_care</span>
+        </div>
+        <h1 class="font-display text-3xl font-bold mb-1" style="color:#5a5243;">LittleSteps</h1>
+        <p style="color:#9b8e7a;font-size:0.875rem;">成长点滴 · 陪伴孩子温和成长</p>
+    </div>
+
+    <!-- Tabs -->
+    <div class="flex mb-5 rounded-xl p-1" style="background:#e8e3da;">
+        <button id="tab-login" class="flex-1 py-2.5 rounded-lg font-bold text-sm transition-all"
+                style="background:#fff;color:#5a5243;box-shadow:0 1px 3px rgba(0,0,0,0.08);"
+                onclick="switchTab('login')">登录</button>
+        <button id="tab-register" class="flex-1 py-2.5 rounded-lg font-bold text-sm transition-all"
+                style="color:#9b8e7a;"
+                onclick="switchTab('register')">注册</button>
+    </div>
+
+    <!-- Error message area (inline) -->
+    <div id="form-error" class="hidden mb-4 px-4 py-3 rounded-lg text-sm font-medium flex items-center gap-2"
+         style="background:#fce4e4;color:#b71c1c;border:1px solid #f5c6c6;">
+        <span class="material-symbols-outlined text-lg">error</span>
+        <span id="form-error-text"></span>
+    </div>
+
+    <!-- Login Form -->
+    <form id="login-form" class="bg-white p-7 rounded-2xl shadow-lg space-y-4"
+          style="border:1px solid #e8e2cf;" onsubmit="handleLogin(event)">
+        <div>
+            <label class="block font-bold text-xs uppercase tracking-wider mb-1.5" style="color:#8b7e6a;">用户名</label>
+            <div class="relative">
+                <span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined" style="color:#bbb0a0;font-size:20px;">person</span>
+                <input id="login-username" type="text" placeholder="请输入用户名"
+                       class="w-full pl-10 pr-4 py-3 rounded-xl text-sm transition-all"
+                       style="background:#f9f7f4;border:2px solid #e8e2cf;color:#3d3427;"
+                       onfocus="this.style.borderColor='#a0b8a8';this.style.background='#fff';"
+                       onblur="this.style.borderColor='#e8e2cf';this.style.background='#f9f7f4';"
+                       required>
+            </div>
+        </div>
+        <div>
+            <label class="block font-bold text-xs uppercase tracking-wider mb-1.5" style="color:#8b7e6a;">密码</label>
+            <div class="relative">
+                <span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined" style="color:#bbb0a0;font-size:20px;">lock</span>
+                <input id="login-password" type="password" placeholder="请输入密码"
+                       class="w-full pl-10 pr-4 py-3 rounded-xl text-sm transition-all"
+                       style="background:#f9f7f4;border:2px solid #e8e2cf;color:#3d3427;"
+                       onfocus="this.style.borderColor='#a0b8a8';this.style.background='#fff';"
+                       onblur="this.style.borderColor='#e8e2cf';this.style.background='#f9f7f4';"
+                       required>
+            </div>
+        </div>
+        <button type="submit" id="login-btn"
+                class="squishy-btn w-full py-3.5 text-white font-bold text-base rounded-xl shadow-md transition-all flex items-center justify-center gap-2 mt-2"
+                style="background:#6b8f7e;"
+                onmouseover="this.style.background='#5a7d6d';this.style.boxShadow='0 4px 16px rgba(107,143,126,0.4)';"
+                onmouseout="this.style.background='#6b8f7e';this.style.boxShadow='0 2px 8px rgba(107,143,126,0.2)';">
+            <span class="material-symbols-outlined">login</span> 登录
+        </button>
+    </form>
+
+    <!-- Register Form -->
+    <form id="register-form" class="bg-white p-7 rounded-2xl shadow-lg space-y-4"
+          style="display:none;border:1px solid #e8e2cf;" onsubmit="handleRegister(event)">
+        <div>
+            <label class="block font-bold text-xs uppercase tracking-wider mb-1.5" style="color:#8b7e6a;">用户名</label>
+            <div class="relative">
+                <span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined" style="color:#bbb0a0;font-size:20px;">person_add</span>
+                <input id="reg-username" type="text" placeholder="至少3个字符"
+                       class="w-full pl-10 pr-4 py-3 rounded-xl text-sm transition-all"
+                       style="background:#f9f7f4;border:2px solid #e8e2cf;color:#3d3427;"
+                       onfocus="this.style.borderColor='#a0b8a8';this.style.background='#fff';"
+                       onblur="this.style.borderColor='#e8e2cf';this.style.background='#f9f7f4';"
+                       required minlength="3">
+            </div>
+        </div>
+        <div>
+            <label class="block font-bold text-xs uppercase tracking-wider mb-1.5" style="color:#8b7e6a;">密码</label>
+            <div class="relative">
+                <span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined" style="color:#bbb0a0;font-size:20px;">lock</span>
+                <input id="reg-password" type="password" placeholder="至少6位密码"
+                       class="w-full pl-10 pr-4 py-3 rounded-xl text-sm transition-all"
+                       style="background:#f9f7f4;border:2px solid #e8e2cf;color:#3d3427;"
+                       onfocus="this.style.borderColor='#a0b8a8';this.style.background='#fff';"
+                       onblur="this.style.borderColor='#e8e2cf';this.style.background='#f9f7f4';"
+                       required minlength="6">
+            </div>
+        </div>
+        <div>
+            <label class="block font-bold text-xs uppercase tracking-wider mb-1.5" style="color:#8b7e6a;">确认密码</label>
+            <div class="relative">
+                <span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined" style="color:#bbb0a0;font-size:20px;">lock_reset</span>
+                <input id="reg-password2" type="password" placeholder="再次输入密码"
+                       class="w-full pl-10 pr-4 py-3 rounded-xl text-sm transition-all"
+                       style="background:#f9f7f4;border:2px solid #e8e2cf;color:#3d3427;"
+                       onfocus="this.style.borderColor='#a0b8a8';this.style.background='#fff';"
+                       onblur="this.style.borderColor='#e8e2cf';this.style.background='#f9f7f4';"
+                       required minlength="6">
+            </div>
+        </div>
+        <button type="submit" id="register-btn"
+                class="squishy-btn w-full py-3.5 text-white font-bold text-base rounded-xl shadow-md transition-all flex items-center justify-center gap-2 mt-2"
+                style="background:#b8956a;"
+                onmouseover="this.style.background='#a07d52';this.style.boxShadow='0 4px 16px rgba(184,149,106,0.4)';"
+                onmouseout="this.style.background='#b8956a';this.style.boxShadow='0 2px 8px rgba(184,149,106,0.2)';">
+            <span class="material-symbols-outlined">person_add</span> 注册
+        </button>
+    </form>
+
+    <!-- Success message -->
+    <div id="form-success" class="hidden mt-4 px-4 py-3 rounded-lg text-sm font-medium flex items-center gap-2"
+         style="background:#e8f5e9;color:#2e7d32;border:1px solid #c8e6c9;">
+        <span class="material-symbols-outlined text-lg">check_circle</span>
+        <span id="form-success-text"></span>
+    </div>
+
+    <!-- Hint -->
+    </div>
+
+<script src="api.js"></script>
+<script>
+    let currentTab = 'login';
+
+    function showError(msg) {
+        const el = document.getElementById('form-error');
+        document.getElementById('form-error-text').textContent = msg;
+        el.classList.remove('hidden');
+        el.classList.add('animate-shake');
+        setTimeout(() => el.classList.remove('animate-shake'), 400);
+    }
+
+    function hideError() {
+        document.getElementById('form-error').classList.add('hidden');
+    }
+
+    function showSuccess(msg) {
+        const el = document.getElementById('form-success');
+        document.getElementById('form-success-text').textContent = msg;
+        el.classList.remove('hidden');
+        setTimeout(() => el.classList.add('hidden'), 3000);
+    }
+
+    function switchTab(tab) {
+        currentTab = tab;
+        hideError();
+        const tabLogin = document.getElementById('tab-login');
+        const tabRegister = document.getElementById('tab-register');
+
+        if (tab === 'login') {
+            tabLogin.style.background = '#fff';
+            tabLogin.style.color = '#5a5243';
+            tabLogin.style.boxShadow = '0 1px 3px rgba(0,0,0,0.08)';
+            tabRegister.style.background = 'transparent';
+            tabRegister.style.color = '#9b8e7a';
+            tabRegister.style.boxShadow = 'none';
+            document.getElementById('login-form').style.display = '';
+            document.getElementById('register-form').style.display = 'none';
+        } else {
+            tabRegister.style.background = '#fff';
+            tabRegister.style.color = '#5a5243';
+            tabRegister.style.boxShadow = '0 1px 3px rgba(0,0,0,0.08)';
+            tabLogin.style.background = 'transparent';
+            tabLogin.style.color = '#9b8e7a';
+            tabLogin.style.boxShadow = 'none';
+            document.getElementById('login-form').style.display = 'none';
+            document.getElementById('register-form').style.display = '';
+        }
+    }
+
+    async function handleLogin(e) {
+        e.preventDefault();
+        hideError();
+        const btn = document.getElementById('login-btn');
+        const origHTML = btn.innerHTML;
+        btn.innerHTML = '<span class="material-symbols-outlined" style="animation:spin 0.8s linear infinite;">progress_activity</span> 登录中...';
+        btn.disabled = true;
+
+        try {
+            const res = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    username: document.getElementById('login-username').value,
+                    password: document.getElementById('login-password').value
+                })
+            });
+            const data = await res.json();
+            if (data.success) {
+                showSuccess('登录成功！正在跳转...');
+                setTimeout(() => { window.location.href = '/dashboard.html'; }, 500);
+            } else {
+                showError(data.message || '用户名或密码错误');
+            }
+        } catch (err) {
+            showError('网络错误，请检查连接后重试');
+        } finally {
+            btn.innerHTML = origHTML;
+            btn.disabled = false;
+        }
+    }
+
+    async function handleRegister(e) {
+        e.preventDefault();
+        hideError();
+        const pw = document.getElementById('reg-password').value;
+        const pw2 = document.getElementById('reg-password2').value;
+        if (pw !== pw2) {
+            showError('两次输入的密码不一致');
+            return;
+        }
+        const btn = document.getElementById('register-btn');
+        const origHTML = btn.innerHTML;
+        btn.innerHTML = '<span class="material-symbols-outlined" style="animation:spin 0.8s linear infinite;">progress_activity</span> 注册中...';
+        btn.disabled = true;
+
+        try {
+            const res = await fetch('/api/auth/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    username: document.getElementById('reg-username').value,
+                    password: pw
+                })
+            });
+            const data = await res.json();
+            if (data.success) {
+                showSuccess('注册成功！请登录');
+                switchTab('login');
+                document.getElementById('login-username').value = document.getElementById('reg-username').value;
+            } else {
+                showError(data.message || '注册失败');
+            }
+        } catch (err) {
+            showError('网络错误，请检查连接后重试');
+        } finally {
+            btn.innerHTML = origHTML;
+            btn.disabled = false;
+        }
+    }
+
+    // Auto-check if already logged in
+    (async function() {
+        try {
+            const res = await fetch('/api/auth/me');
+            const data = await res.json();
+            if (data.success) {
+                window.location.href = '/dashboard.html';
+            }
+        } catch(e) {}
+    })();
+</script>
+<style>
+    @keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+</style>
+<!-- Footer -->
+<footer class="w-full py-6 border-t border-outline-variant flex items-center justify-center gap-6 px-4 mt-8">
+  <span class="text-sm text-secondary/60">©cch（to the best one's ability）</span>
+  <button onclick="showAbout()" class="text-sm text-secondary/50 hover:text-primary transition-colors underline underline-offset-4 cursor-pointer">关于我们</button>
+</footer>
+<!-- About Panel -->
+<div id="about-panel" class="fixed inset-0 z-50 flex items-center justify-center bg-black/25 backdrop-blur-sm hidden" onclick="if(event.target===this) hideAbout()">
+  <div class="bg-white rounded-2xl shadow-xl p-8 max-w-xs w-full mx-4 text-center animate-in">
+    <p class="text-2xl font-bold" style="color:#5a5243;">cch</p>
+    <button onclick="hideAbout()" class="mt-5 text-sm text-secondary/50 hover:text-secondary underline underline-offset-4 transition-colors cursor-pointer">关闭</button>
+  </div>
+</div>
+<script>
+function showAbout() { document.getElementById('about-panel').classList.remove('hidden'); }
+function hideAbout() { document.getElementById('about-panel').classList.add('hidden'); }
+</script>
+</body>
+</html>

@@ -1,0 +1,610 @@
+<!DOCTYPE html><html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>LittleSteps (成长点滴) - 控制面板</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&family=Be+Vietnam+Pro:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+<script src="api.js"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-secondary-fixed": "#0c1e26",
+                    "on-primary-fixed-variant": "#4a4739",
+                    "on-tertiary": "#ffffff",
+                    "background": "#f8f9ff",
+                    "surface": "#f8f9ff",
+                    "on-error-container": "#93000a",
+                    "surface-bright": "#f8f9ff",
+                    "surface-tint": "#625f4f",
+                    "on-error": "#ffffff",
+                    "surface-container-lowest": "#ffffff",
+                    "secondary-container": "#d3e5f1",
+                    "surface-variant": "#d9e3f4",
+                    "on-primary": "#ffffff",
+                    "surface-container-high": "#dfe9fa",
+                    "on-primary-container": "#767262",
+                    "error": "#ba1a1a",
+                    "primary-fixed": "#e8e2cf",
+                    "tertiary": "#695a64",
+                    "on-surface-variant": "#49473f",
+                    "error-container": "#ffdad6",
+                    "on-surface": "#121c28",
+                    "secondary": "#50616b",
+                    "on-secondary-fixed-variant": "#384953",
+                    "on-tertiary-fixed": "#231820",
+                    "surface-dim": "#d1dbec",
+                    "inverse-surface": "#27313e",
+                    "on-secondary": "#ffffff",
+                    "secondary-fixed": "#d3e5f1",
+                    "tertiary-fixed": "#f1dde9",
+                    "on-secondary-container": "#566771",
+                    "primary-container": "#fff9e5",
+                    "primary": "#625f4f",
+                    "outline-variant": "#cbc6bb",
+                    "surface-container": "#e5eeff",
+                    "surface-container-highest": "#d9e3f4",
+                    "surface-container-low": "#eef4ff",
+                    "on-background": "#121c28",
+                    "inverse-on-surface": "#eaf1ff",
+                    "on-primary-fixed": "#1e1c10",
+                    "outline": "#7a776e",
+                    "primary-fixed-dim": "#ccc6b4",
+                    "inverse-primary": "#ccc6b4",
+                    "tertiary-container": "#fff7f9",
+                    "tertiary-fixed-dim": "#d5c1cd",
+                    "on-tertiary-fixed-variant": "#51434c",
+                    "on-tertiary-container": "#7e6e78",
+                    "secondary-fixed-dim": "#b7c9d5"
+            },
+            "borderRadius": {
+                    "DEFAULT": "1rem",
+                    "lg": "2rem",
+                    "xl": "3rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "gutter": "24px",
+                    "base": "8px",
+                    "section-gap": "64px",
+                    "container-padding-desktop": "40px",
+                    "container-padding-mobile": "20px"
+            },
+            "fontFamily": {
+                    "display-lg": ["Quicksand"],
+                    "headline-md": ["Quicksand"],
+                    "body-md": ["Be Vietnam Pro"],
+                    "display-lg-mobile": ["Quicksand"],
+                    "label-md": ["Quicksand"],
+                    "body-lg": ["Be Vietnam Pro"]
+            },
+            "fontSize": {
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "display-lg-mobile": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
+                    "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #f8f9ff;
+            background-image:
+                radial-gradient(at 0% 0%, rgba(211, 229, 241, 0.3) 0px, transparent 50%),
+                radial-gradient(at 100% 0%, rgba(255, 249, 229, 0.3) 0px, transparent 50%);
+            min-height: 100vh;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .squishy-button {
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .squishy-button:active {
+            transform: scale(0.92);
+        }
+        .moment-card:hover .moment-overlay {
+            opacity: 1;
+        }
+        .growth-chart-bar {
+            transition: height 1s ease-out;
+        }
+        @keyframes modalOverlayIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes modalContentIn {
+            from { opacity: 0; transform: scale(0.9) translateY(20px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        @keyframes toastSlide {
+            from { opacity: 0; transform: translateY(-100%); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes lightboxIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes lightboxImgIn {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .modal-overlay { animation: modalOverlayIn 0.25s ease forwards; }
+        .modal-content { animation: modalContentIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        .toast-top { animation: toastSlide 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        .lightbox-overlay { animation: lightboxIn 0.3s ease forwards; }
+        .lightbox-img { animation: lightboxImgIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        .vaccine-detail { max-height: 0; overflow: hidden; transition: max-height 0.4s ease, opacity 0.3s ease; opacity: 0; }
+        .vaccine-detail.open { max-height: 300px; opacity: 1; }
+    </style>
+</head>
+<body class="font-body-md text-on-background">
+<!-- Toast -->
+<div id="toast-top" class="fixed top-6 left-1/2 -translate-x-1/2 z-[100] pointer-events-none"></div>
+
+<!-- Lightbox -->
+<div id="lightbox" class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/80 lightbox-overlay" style="display:none;" onclick="closeLightbox()">
+    <button class="absolute top-6 right-6 text-white hover:text-tertiary-fixed transition-colors" onclick="closeLightbox()">
+        <span class="material-symbols-outlined text-5xl">close</span>
+    </button>
+    <img id="lightbox-img" class="lightbox-img max-w-[90vw] max-h-[85vh] rounded-lg shadow-2xl object-contain" src="" alt="照片预览" onclick="event.stopPropagation()">
+    <p id="lightbox-caption" class="absolute bottom-6 text-white font-label-md text-label-md bg-black/50 px-4 py-2 rounded-full"></p>
+</div>
+
+<!-- Quick Add Modal -->
+<div id="quick-add-modal" class="fixed inset-0 z-[90] hidden items-center justify-center" style="display:none;">
+    <div class="modal-overlay absolute inset-0 bg-black/40" onclick="closeQuickAdd()"></div>
+    <div class="modal-content relative bg-white rounded-xl p-8 max-w-lg w-full mx-4 shadow-2xl border-2 border-primary-container z-10">
+        <h3 class="font-headline-md text-headline-md text-primary mb-6 flex items-center gap-2">
+            <span class="material-symbols-outlined text-tertiary">add_circle</span> 新增记录
+        </h3>
+        <div class="grid grid-cols-2 gap-4 mb-6">
+            <button class="p-6 bg-primary-container/40 hover:bg-primary-container/80 rounded-lg text-center squishy-button transition-all" onclick="quickAdd('每日日志')">
+                <span class="material-symbols-outlined text-primary text-3xl mb-2 block">edit_note</span>
+                <span class="font-label-md text-on-primary-container">每日日志</span>
+            </button>
+            <button class="p-6 bg-secondary-container/40 hover:bg-secondary-container/80 rounded-lg text-center squishy-button transition-all" onclick="quickAdd('成长轨迹')">
+                <span class="material-symbols-outlined text-secondary text-3xl mb-2 block">monitor_weight</span>
+                <span class="font-label-md text-on-secondary-container">成长轨迹</span>
+            </button>
+            <button class="p-6 bg-tertiary-container/40 hover:bg-tertiary-container/80 rounded-lg text-center squishy-button transition-all" onclick="quickAdd('疫苗计划')">
+                <span class="material-symbols-outlined text-tertiary text-3xl mb-2 block">vaccines</span>
+                <span class="font-label-md text-tertiary">疫苗计划</span>
+            </button>
+            <button class="p-6 bg-surface-variant/40 hover:bg-surface-variant/80 rounded-lg text-center squishy-button transition-all" onclick="quickAdd('精彩瞬间')">
+                <span class="material-symbols-outlined text-on-surface-variant text-3xl mb-2 block">photo_camera</span>
+                <span class="font-label-md text-on-surface-variant">精彩瞬间</span>
+            </button>
+        </div>
+        <button onclick="closeQuickAdd()" class="w-full px-6 py-3 rounded-lg bg-surface-container-high text-secondary font-label-md hover:bg-surface-container transition-all">取消</button>
+    </div>
+</div>
+
+<!-- TopAppBar -->
+<header class="bg-surface-container-low shadow-sm sticky top-0 z-50 w-full">
+<div class="flex justify-between items-center px-container-padding-desktop py-4 w-full max-w-[1200px] mx-auto">
+<div class="font-display-lg text-display-lg text-primary tracking-tight">LittleSteps (成长点滴)</div>
+<nav class="hidden md:flex gap-8 items-center">
+<a class="text-primary font-bold border-b-4 border-tertiary rounded-t-lg pb-1 font-label-md text-label-md" href="#">控制面板</a>
+<a class="text-secondary hover:text-primary transition-colors duration-200 font-label-md text-label-md" href="journal.html">每日日志</a>
+<a class="text-secondary hover:text-primary transition-colors duration-200 font-label-md text-label-md" href="growth.html">成长轨迹</a>
+<a class="text-secondary hover:text-primary transition-colors duration-200 font-label-md text-label-md" href="vaccine.html">疫苗计划</a>
+<a class="text-secondary hover:text-primary transition-colors duration-200 font-label-md text-label-md" href="gallery.html">精彩瞬间</a>
+</nav>
+<div class="flex items-center gap-4">
+<button class="p-2 hover:bg-primary-container/50 rounded-xl transition-all active:scale-95" onclick="showToast('暂无新通知 🔔')">
+<span class="material-symbols-outlined text-primary">notifications</span>
+</button>
+<button class="p-2 hover:bg-error-container/50 rounded-xl transition-all active:scale-95" onclick="handleLogout()" title="退出登录">
+<span class="material-symbols-outlined text-error">logout</span>
+</button>
+<div class="w-10 h-10 rounded-full border-2 border-primary-container overflow-hidden flex items-center justify-center bg-primary-container">
+<span class="material-symbols-outlined text-primary text-2xl">person</span>
+</div>
+</div>
+</div>
+</header>
+<main class="max-w-[1200px] mx-auto px-container-padding-desktop py-base md:py-12 flex flex-col gap-10">
+<!-- Hero Section: Child Profile Summary -->
+<section class="grid grid-cols-1 md:grid-cols-12 gap-gutter items-center">
+<div class="md:col-span-8 flex items-center gap-6 p-8 bg-surface-container-lowest rounded-xl shadow-[0_10px_25px_-5px_rgba(200,180,150,0.2)] border-2 border-secondary-container/20">
+<div class="w-24 h-24 md:w-32 md:h-32 rounded-full border-4 border-tertiary-fixed overflow-hidden flex-shrink-0 flex items-center justify-center bg-primary-container cursor-pointer hover:opacity-80 transition-opacity relative group" onclick="document.getElementById('avatar-upload').click()" title="点击更换头像">
+<span id="child-avatar-icon" class="material-symbols-outlined text-primary text-6xl" style="font-variation-settings:'FILL'1;">child_care</span>
+<img id="child-avatar" alt="孩子头像" class="w-full h-full object-cover hidden" src="">
+<div class="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-white text-3xl">photo_camera</span>
+</div>
+</div>
+<input type="file" id="avatar-upload" accept="image/*" class="hidden" onchange="handleAvatarUpload(event)">
+<div>
+<h1 id="child-name" class="font-display-lg text-display-lg text-primary mb-1">添加宝宝</h1>
+<p id="child-info" class="font-body-lg text-secondary mb-4">👶 请在"设置"中添加宝宝信息</p>
+<div id="milestone-badges" class="flex flex-wrap gap-2"></div>
+</div>
+</div>
+<div class="md:col-span-4 h-full">
+<button class="w-full h-full bg-tertiary text-on-tertiary rounded-xl p-6 flex flex-col items-center justify-center gap-3 squishy-button shadow-[0_10px_20px_rgba(105,90,100,0.2)]" onclick="openQuickAdd()">
+<span class="material-symbols-outlined text-4xl" style="font-variation-settings: 'FILL' 1;">add_circle</span>
+<span class="font-headline-md text-headline-md">新增记录</span>
+<span class="text-sm opacity-90">瞬间、数据或里程碑</span>
+</button>
+</div>
+</section>
+<!-- Main Dashboard Grid -->
+<section class="grid grid-cols-1 md:grid-cols-12 gap-gutter">
+<!-- Left Column: Vaccine & Growth -->
+<div class="md:col-span-7 flex flex-col gap-gutter">
+<!-- Vaccine Card -->
+<div class="bg-surface-container-lowest p-8 rounded-xl shadow-[0_10px_25px_-5px_rgba(200,180,150,0.15)] border-2 border-secondary-container/20 relative overflow-hidden">
+<div class="absolute -right-8 -top-8 w-32 h-32 bg-secondary-container/30 rounded-full blur-2xl"></div>
+<div class="flex items-start justify-between mb-6">
+<div>
+<span class="text-label-md font-label-md text-tertiary uppercase tracking-wider">待办健康清单</span>
+<h2 class="font-headline-md text-headline-md text-primary mt-1">下一次疫苗</h2>
+</div>
+<span class="material-symbols-outlined text-secondary text-3xl">vaccines</span>
+</div>
+<div id="vaccine-next-card" class="flex items-center gap-6 p-6 bg-primary-container rounded-lg border border-primary-fixed">
+<div class="flex-shrink-0 text-center px-4 py-2 bg-white rounded-lg shadow-sm">
+<div class="text-tertiary font-bold text-xl">--</div>
+<div class="text-primary text-2xl font-bold">--</div>
+</div>
+<div class="flex-grow">
+<h3 class="font-bold text-primary text-lg">暂无疫苗记录</h3>
+<p class="text-secondary text-sm">请在"疫苗计划"中添加</p>
+</div>
+<button class="squishy-button px-4 py-2 bg-white text-primary border border-primary-fixed rounded-lg font-label-md text-label-md" onclick="window.location.href='vaccine.html'">
+                            前往添加
+                        </button>
+</div>
+<div id="vaccine-detail" class="vaccine-detail mt-4 p-4 bg-white rounded-lg border border-secondary-container/30">
+    <div class="space-y-2 text-sm" id="vaccine-detail-content">
+        <p class="text-secondary text-sm">暂无详情</p>
+    </div>
+</div>
+</div>
+<!-- Growth Chart Snippet -->
+<div class="bg-surface-container-lowest p-8 rounded-xl shadow-[0_10px_25px_-5px_rgba(200,180,150,0.15)] border-2 border-secondary-container/20">
+<div class="flex items-center justify-between mb-8">
+<h2 class="font-headline-md text-headline-md text-primary">成长轨迹</h2>
+<div class="flex gap-2">
+<button id="btn-height" class="px-3 py-1 bg-secondary-container text-on-secondary-container rounded-lg text-xs font-bold squishy-button" onclick="switchGrowth('height')">身高</button>
+<button id="btn-weight" class="px-3 py-1 bg-surface-container text-secondary rounded-lg text-xs font-bold squishy-button hover:bg-secondary-container/50" onclick="switchGrowth('weight')">体重</button>
+</div>
+</div>
+<div id="growth-chart-container" class="h-48 flex items-end justify-between gap-4 px-2">
+    <!-- Height bars (default) -->
+</div>
+<div class="text-center mt-4">
+    <span id="growth-label" class="text-xs text-secondary font-bold">最近6个月身高变化 (cm)</span>
+</div>
+</div>
+</div>
+<!-- Right Column: Recent Moments -->
+<div class="md:col-span-5">
+<div class="bg-surface-container-lowest p-8 rounded-xl shadow-[0_10px_25px_-5px_rgba(200,180,150,0.15)] border-2 border-secondary-container/20 h-full">
+<div class="flex items-center justify-between mb-6">
+<h2 class="font-headline-md text-headline-md text-primary">精彩瞬间</h2>
+<a class="text-tertiary text-sm font-bold flex items-center hover:underline cursor-pointer" onclick="window.location.href='gallery.html'">查看全部 <span class="material-symbols-outlined text-sm ml-1">arrow_forward</span></a>
+</div>
+<div class="flex flex-col gap-4" id="moments-container">
+<div id="moments-empty" class="text-center py-8 text-secondary text-sm">暂无精彩瞬间，请上传照片</div>
+<div class="grid grid-cols-2 gap-4">
+<div class="bg-secondary-container/20 border-2 border-dashed border-secondary-container/40 rounded-lg h-32 flex flex-col items-center justify-center text-secondary hover:bg-secondary-container/30 transition-all cursor-pointer squishy-button" onclick="triggerUpload('photo')">
+<span class="material-symbols-outlined text-3xl">add_a_photo</span>
+<span class="text-xs font-bold mt-2">新瞬间</span>
+</div>
+<div class="bg-tertiary-container/30 border-2 border-dashed border-tertiary-container/60 rounded-lg h-32 flex flex-col items-center justify-center text-tertiary hover:bg-tertiary-container/50 transition-all cursor-pointer squishy-button" onclick="triggerUpload('video')">
+<span class="material-symbols-outlined text-3xl">movie</span>
+<span class="text-xs font-bold mt-2">新视频</span>
+</div>
+</div>
+<!-- Hidden file input -->
+<input type="file" id="file-upload" accept="image/*,video/*" style="display:none;" onchange="handleFileUpload(event)">
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="w-full py-6 mt-section-gap border-t border-outline-variant flex items-center justify-center gap-6 px-4">
+  <span class="text-sm text-secondary/60">©cch（to the best one's ability）</span>
+  <button onclick="showAbout()" class="text-sm text-secondary/50 hover:text-primary transition-colors underline underline-offset-4 cursor-pointer">关于我们</button>
+</footer>
+<!-- About Panel -->
+<div id="about-panel" class="fixed inset-0 z-50 flex items-center justify-center bg-black/25 backdrop-blur-sm hidden" onclick="if(event.target===this) hideAbout()">
+  <div class="bg-white rounded-2xl shadow-xl p-8 max-w-xs w-full mx-4 text-center animate-in">
+    <p class="text-2xl font-bold" style="color:#5a5243;">cch</p>
+    <button onclick="hideAbout()" class="mt-5 text-sm text-secondary/50 hover:text-secondary underline underline-offset-4 transition-colors cursor-pointer">关闭</button>
+  </div>
+</div>
+<!-- FAB for mobile -->
+<button class="fixed bottom-8 right-8 w-16 h-16 bg-primary text-white rounded-full shadow-xl flex items-center justify-center squishy-button z-50 md:hidden" onclick="openQuickAdd()">
+<span class="material-symbols-outlined text-3xl">add</span>
+</button>
+
+<script>
+    // --- Auth ---
+    async function handleLogout() {
+        await AuthAPI.logout();
+        window.location.href = '/login.html';
+    }
+
+    // --- Avatar Upload ---
+    async function handleAvatarUpload(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        try {
+            const formData = new FormData();
+            formData.append('file', file);
+            const res = await fetch('/api/children/1/avatar', { method: 'POST', body: formData });
+            const data = await res.json();
+            if (data.success && data.data.avatarUrl) {
+                document.getElementById('child-avatar').src = data.data.avatarUrl;
+                document.getElementById('child-avatar').classList.remove('hidden');
+                document.getElementById('child-avatar-icon').classList.add('hidden');
+                showToast('✅ 头像更新成功！');
+            } else {
+                showToast('头像更新失败');
+            }
+        } catch (err) {
+            showToast('头像更新失败，请重试');
+        }
+        e.target.value = '';
+    }
+
+    // --- Toast ---
+    function showToast(msg) {
+        const c = document.getElementById('toast-top');
+        const el = document.createElement('div');
+        el.className = 'toast-top bg-primary text-white px-6 py-3 rounded-lg shadow-lg font-label-md text-label-md mb-2 text-center';
+        el.textContent = msg;
+        c.appendChild(el);
+        setTimeout(() => { el.style.opacity = '0'; el.style.transition = 'opacity 0.3s'; }, 2000);
+        setTimeout(() => el.remove(), 2500);
+    }
+
+    // --- Quick Add Modal ---
+    function openQuickAdd() {
+        document.getElementById('quick-add-modal').style.display = 'flex';
+    }
+    function closeQuickAdd() {
+        document.getElementById('quick-add-modal').style.display = 'none';
+    }
+    function quickAdd(type) {
+        closeQuickAdd();
+        const targets = {
+            '每日日志': 'journal.html',
+            '成长轨迹': 'growth.html',
+            '疫苗计划': 'vaccine.html',
+            '精彩瞬间': 'gallery.html'
+        };
+        const url = targets[type];
+        if (url) {
+            showToast(`正在跳转到"${type}"… ✨`);
+            setTimeout(() => { window.location.href = url; }, 400);
+        }
+    }
+
+    // --- Lightbox ---
+    function openLightbox(src, caption) {
+        document.getElementById('lightbox-img').src = src;
+        document.getElementById('lightbox-caption').textContent = caption;
+        document.getElementById('lightbox').style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+    function closeLightbox() {
+        document.getElementById('lightbox').style.display = 'none';
+        document.body.style.overflow = '';
+    }
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') { closeLightbox(); closeQuickAdd(); }
+    });
+
+    // --- Vaccine Detail Toggle ---
+    function toggleVaccineDetail() {
+        const detail = document.getElementById('vaccine-detail');
+        detail.classList.toggle('open');
+    }
+
+    // --- File Upload ---
+    let uploadType = 'photo';
+    function triggerUpload(type) {
+        uploadType = type;
+        document.getElementById('file-upload').click();
+    }
+    async function handleFileUpload(e) {
+        const file = e.target.files[0];
+        if (file) {
+            try {
+                await GalleryAPI.create({
+                    childId: 1,
+                    url: URL.createObjectURL(file),
+                    caption: file.name,
+                    type: uploadType === 'video' ? 'video' : 'photo',
+                    takenAt: new Date().toISOString()
+                });
+                showToast(`✅ ${uploadType === 'photo' ? '照片' : '视频'} "${file.name}" 上传成功！`);
+                loadDashboard();
+            } catch(err) {
+                showToast('上传失败，请重试');
+            }
+        }
+        e.target.value = '';
+    }
+
+    // --- Growth Chart ---
+    let growthCache = { heightData: [], weightData: [], months: [] };
+    let currentMetric = 'height';
+
+    function renderGrowthChart() {
+        const container = document.getElementById('growth-chart-container');
+        const data = currentMetric === 'height' ? growthCache.heightData : growthCache.weightData;
+        const unit = currentMetric === 'height' ? 'cm' : 'kg';
+        const label = currentMetric === 'height' ? '身高' : '体重';
+        const color = currentMetric === 'height' ? 'bg-secondary' : 'bg-tertiary';
+        const bgColor = currentMetric === 'height' ? 'bg-secondary-container/30' : 'bg-tertiary-container';
+
+        if (data.length === 0) {
+            container.innerHTML = '<div class="text-center w-full text-secondary text-sm py-8">暂无成长数据</div>';
+            return;
+        }
+
+        const maxVal = Math.max(...data);
+        container.innerHTML = data.map((val, i) => {
+            const pct = (val / maxVal) * 100;
+            const isLast = i === data.length - 1;
+            return `
+                <div class="flex flex-col items-center flex-1 gap-2 group">
+                    <div class="w-full ${isLast ? bgColor : bgColor} rounded-t-lg relative flex items-end transition-all" style="height: ${40 + (pct * 0.55)}px;">
+                        <div class="w-full ${isLast ? 'bg-tertiary' : color} rounded-t-lg growth-chart-bar" style="height:${pct}%;"></div>
+                    </div>
+                    <span class="text-[10px] font-bold ${isLast ? 'text-tertiary' : 'text-secondary'}">${growthCache.months[i]}<br>${val}${unit}</span>
+                </div>`;
+        }).join('');
+        document.getElementById('growth-label').textContent = `最近${data.length}个月${label}变化`;
+
+        setTimeout(() => {
+            const bars = container.querySelectorAll('.growth-chart-bar');
+            bars.forEach((bar, i) => {
+                const h = bar.style.height;
+                bar.style.height = '0';
+                setTimeout(() => { bar.style.height = h; }, 50 + i * 80);
+            });
+        }, 50);
+    }
+
+    function switchGrowth(metric) {
+        currentMetric = metric;
+        document.getElementById('btn-height').className = metric === 'height'
+            ? 'px-3 py-1 bg-secondary-container text-on-secondary-container rounded-lg text-xs font-bold squishy-button'
+            : 'px-3 py-1 bg-surface-container text-secondary rounded-lg text-xs font-bold squishy-button hover:bg-secondary-container/50';
+        document.getElementById('btn-weight').className = metric === 'weight'
+            ? 'px-3 py-1 bg-tertiary-container text-tertiary rounded-lg text-xs font-bold squishy-button'
+            : 'px-3 py-1 bg-surface-container text-secondary rounded-lg text-xs font-bold squishy-button hover:bg-secondary-container/50';
+        renderGrowthChart();
+    }
+
+    // --- Load dashboard data ---
+    async function loadDashboard() {
+        try {
+            const res = await DashboardAPI.get(1);
+            if (!res.success || !res.data) return;
+            const d = res.data;
+
+            // Child info
+            if (d.child) {
+                document.getElementById('child-name').textContent = d.child.name;
+                document.getElementById('child-info').innerHTML =
+                    `👶 ${d.child.gender} · ${d.child.ageInMonths}个月 · ${d.child.birthDate}出生`;
+                // Avatar
+                if (d.child.avatarUrl) {
+                    document.getElementById('child-avatar').src = d.child.avatarUrl;
+                    document.getElementById('child-avatar').classList.remove('hidden');
+                    document.getElementById('child-avatar-icon').classList.add('hidden');
+                }
+                // Milestones
+                const badges = document.getElementById('milestone-badges');
+                if (d.child.milestones && d.child.milestones.length > 0) {
+                    badges.innerHTML = d.child.milestones.map((m, i) => {
+                        const colors = ['bg-primary-container text-on-primary-container',
+                            'bg-secondary-container text-on-secondary-container',
+                            'bg-tertiary-container text-on-tertiary-container'];
+                        return `<span class="px-3 py-1 ${colors[i % 3]} rounded-full text-xs font-bold">${m}</span>`;
+                    }).join('');
+                }
+            }
+
+            // Vaccine summary
+            if (d.vaccines) {
+                const vc = document.getElementById('vaccine-next-card');
+                if (vc) {
+                    const dateParts = d.vaccines.nextDate ? d.vaccines.nextDate.split('-') : ['--', '--'];
+                    vc.innerHTML = `
+                        <div class="flex-shrink-0 text-center px-4 py-2 bg-white rounded-lg shadow-sm">
+                            <div class="text-tertiary font-bold text-xl">${dateParts[1] || '--'}月</div>
+                            <div class="text-primary text-2xl font-bold">${dateParts[2] || '--'}</div>
+                        </div>
+                        <div class="flex-grow">
+                            <h3 class="font-bold text-primary text-lg">${d.vaccines.nextVaccine || '暂无'}</h3>
+                            <p class="text-secondary text-sm">${d.vaccines.nextLocation || ''}${d.vaccines.nextDoctor ? ' · ' + d.vaccines.nextDoctor : ''}</p>
+                        </div>
+                        <button class="squishy-button px-4 py-2 bg-white text-primary border border-primary-fixed rounded-lg font-label-md text-label-md" onclick="toggleVaccineDetail()">详情</button>`;
+                    // Update detail
+                    const detailContent = document.getElementById('vaccine-detail-content');
+                    if (detailContent && d.vaccines.nextLocation) {
+                        detailContent.innerHTML = `
+                            <p class="flex items-center gap-2"><span class="material-symbols-outlined text-tertiary text-sm">location_on</span> ${d.vaccines.nextLocation || ''}</p>
+                            <p class="flex items-center gap-2"><span class="material-symbols-outlined text-tertiary text-sm">person</span> ${d.vaccines.nextDoctor || '待定'}</p>`;
+                    }
+                }
+            }
+
+            // Growth chart data
+            if (d.recentGrowth && d.recentGrowth.length > 0) {
+                growthCache.heightData = [];
+                growthCache.weightData = [];
+                growthCache.months = [];
+                d.recentGrowth.forEach(g => {
+                    growthCache.months.push(g.month);
+                    if (g.label === '身高') {
+                        growthCache.heightData.push(g.value);
+                        growthCache.weightData.push(null);
+                    } else {
+                        growthCache.weightData.push(g.value);
+                        growthCache.heightData.push(null);
+                    }
+                });
+                for (let i = 0; i < growthCache.heightData.length; i++) {
+                    if (growthCache.heightData[i] === null && i > 0) growthCache.heightData[i] = growthCache.heightData[i-1];
+                    if (growthCache.weightData[i] === null && i > 0) growthCache.weightData[i] = growthCache.weightData[i-1];
+                }
+                growthCache.heightData = growthCache.heightData.filter(v => v !== null);
+                growthCache.weightData = growthCache.weightData.filter(v => v !== null);
+                renderGrowthChart();
+            }
+
+            // Gallery photos
+            if (d.recentPhotos && d.recentPhotos.length > 0) {
+                const container = document.getElementById('moments-container');
+                const emptyEl = document.getElementById('moments-empty');
+                if (emptyEl) emptyEl.remove();
+                // Remove existing moment cards
+                container.querySelectorAll('.moment-card').forEach(el => el.remove());
+                const gridDiv = container.querySelector('.grid.grid-cols-2');
+
+                d.recentPhotos.forEach(photo => {
+                    const card = document.createElement('div');
+                    card.className = 'moment-card group relative rounded-lg overflow-hidden h-40 cursor-pointer';
+                    card.onclick = () => openLightbox(photo.url, photo.caption || '');
+                    card.innerHTML = `
+                        <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="${photo.url}" alt="${photo.caption || ''}">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent p-4 flex flex-col justify-end moment-overlay opacity-0 transition-opacity">
+                            <p class="text-white font-bold">${photo.caption || ''}</p>
+                            <p class="text-white/80 text-xs">${photo.timeAgo || ''}</p>
+                            </div>`;
+                    container.insertBefore(card, gridDiv);
+                });
+            }
+        } catch (err) {
+            console.error('Dashboard load error:', err);
+        }
+    }
+
+    // --- Init ---
+    (async function() {
+        const user = await checkAuth();
+        if (!user) return;
+        await loadDashboard();
+    })();
+
+    function showAbout() { document.getElementById('about-panel').classList.remove('hidden'); }
+    function hideAbout() { document.getElementById('about-panel').classList.add('hidden'); }
+</script>
+
+
+</body></html>
